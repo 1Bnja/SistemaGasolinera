@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surtidor {{ surtidor_id }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container { max-width: 800px; width: 100%; }
+        
+        .nav-header { text-align: center; margin-bottom: 16px; }
+        .nav-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.875em;
+            transition: background 0.2s;
+        }
+        .nav-link:hover { background: #5a6268; }
+        
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
+        
+        h1 { color: #212529; text-align: center; margin-bottom: 6px; font-size: 1.6em; font-weight: 600; }
+        .subtitle { text-align: center; color: #6c757d; margin-bottom: 20px; font-size: 0.9em; }
+        
+        .estado-display {
+            text-align: center;
+            padding: 18px;
+            border-radius: 6px;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .estado-libre { background: #d1fae5; color: #065f46; border: 2px solid #059669; }
+        .estado-operacion { background: #fed7aa; color: #92400e; border: 2px solid #f59e0b; animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        
+        .precios-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .precio-card {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .precio-label { font-weight: 500; color: #495057; }
+        .precio-valor { font-size: 1.1em; color: #059669; font-weight: 600; }
+        
+        .dispensar-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+        }
+        .dispensar-section h3 { color: #212529; margin-bottom: 16px; font-size: 1.05em; }
+        
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: #495057; font-size: 0.9em; }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-primary { background: #1e3a8a; color: white; }
+        .btn-primary:hover:not(:disabled) { background: #1e40af; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .contadores-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 18px; }
+        .contador-card {
+            background: white;
+            padding: 14px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        .contador-valor { font-size: 1.25em; font-weight: 600; margin-bottom: 4px; color: #212529; }
+        .contador-label { font-size: 0.75em; color: #6c757d; }
+        
+        .mensaje { padding: 12px; border-radius: 6px; margin-top: 14px; display: none; }
+        .mensaje.success { background: #d1fae5; color: #065f46; }
+        .mensaje.error { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-header">
+            {% if distribuidor_id == '1' %}
+                <a href="http://localhost:8001" class="nav-link">Volver a Distribuidor 1</a>
+            {% elif distribuidor_id == '2' %}
+                <a href="http://localhost:8002" class="nav-link">Volver a Distribuidor 2</a>
+            {% elif distribuidor_id == '3' %}
+                <a href="http://localhost:8003" class="nav-link">Volver a Distribuidor 3</a>
+            {% endif %}
+        </div>
+        
+        <div class="card">
+            <h1>Surtidor {{ surtidor_id }}</h1>
+            <p class="subtitle">Sistema Multifunción - 5 Combustibles</p>
+            
+            <div id="estado-display" class="estado-display estado-libre">LIBRE</div>
+            
+            <h3 style="margin-bottom: 14px; color: #212529; font-size: 1.05em;">Precios Actuales</h3>
+            <div class="precios-grid" id="precios-grid">
+                <div class="precio-card"><span class="precio-label">Gasolina 93:</span><span class="precio-valor">$0</span></div>
+            </div>
+            
+            <div class="dispensar-section">
+                <h3>Simular Dispensado</h3>
+                
+                <div class="form-group">
+                    <label for="tipo-combustible">Tipo de Combustible:</label>
+                    <select id="tipo-combustible">
+                        <option value="93">Gasolina 93</option>
+                        <option value="95">Gasolina 95</option>
+                        <option value="97">Gasolina 97</option>
+                        <option value="diesel">Diesel</option>
+                        <option value="kerosene">Kerosene</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="litros">Litros a Dispensar:</label>
+                    <input type="number" id="litros" min="1" max="100" value="40" step="0.1">
+                </div>
+                
+                <button class="btn btn-primary" id="btn-dispensar" onclick="dispensar()">Iniciar Dispensado</button>
+                
+                <div id="mensaje" class="mensaje"></div>
+            </div>
+            
+            <h3 style="margin-top: 22px; margin-bottom: 14px; color: #212529; font-size: 1.05em;">Contadores Acumulativos</h3>
+            <div class="contadores-grid" id="contadores-grid"></div>
+        </div>
+    </div>
+    
+    <script>
+        let estadoActual = 'LIBRE';
+        
+        async function cargarEstado() {
+            try {
+                const response = await fetch('/api/estado');
+                const data = await response.json();
+                estadoActual = data.estado;
+                
+                const estadoDisplay = document.getElementById('estado-display');
+                if (data.estado === 'LIBRE') {
+                    estadoDisplay.className = 'estado-display estado-libre';
+                    estadoDisplay.textContent = 'LIBRE';
+                } else {
+                    estadoDisplay.className = 'estado-display estado-operacion';
+                    estadoDisplay.textContent = 'EN OPERACIÓN';
+                }
+                
+                const preciosHtml = Object.entries(data.precios).map(([tipo, precio]) => {
+                    const nombre = {
+                        '93': 'Gasolina 93',
+                        '95': 'Gasolina 95',
+                        '97': 'Gasolina 97',
+                        'diesel': 'Diesel',
+                        'kerosene': 'Kerosene'
+                    }[tipo] || tipo;
+                    return `<div class="precio-card"><span class="precio-label">${nombre}:</span><span class="precio-valor">$${precio}</span></div>`;
+                }).join('');
+                document.getElementById('precios-grid').innerHTML = preciosHtml;
+                
+                const contadoresHtml = Object.entries(data.contadores).map(([tipo, stats]) => {
+                    const nombre = {
+                        '93': '93',
+                        '95': '95',
+                        '97': '97',
+                        'diesel': 'Diesel',
+                        'kerosene': 'Kero'
+                    }[tipo] || tipo;
+                    return `
+                        <div class="contador-card">
+                            <div class="contador-valor">${stats.litros.toFixed(1)}L</div>
+                            <div class="contador-label">${nombre}</div>
+                            <div class="contador-label">${stats.cargas} ventas</div>
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('contadores-grid').innerHTML = contadoresHtml;
+                
+                document.getElementById('btn-dispensar').disabled = (data.estado !== 'LIBRE');
+            } catch (error) {
+                console.error('Error cargando estado:', error);
+            }
+        }
+        
+        async function dispensar() {
+            const tipoCombustible = document.getElementById('tipo-combustible').value;
+            const litros = parseFloat(document.getElementById('litros').value);
+            
+            if (litros <= 0) {
+                mostrarMensaje('Cantidad de litros inválida', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/dispensar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tipo_combustible: tipoCombustible, litros: litros })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    mostrarMensaje(result.message, 'success');
+                } else {
+                    mostrarMensaje(result.message, 'error');
+                }
+            } catch (error) {
+                mostrarMensaje('Error al dispensar', 'error');
+            }
+        }
+        
+        function mostrarMensaje(texto, tipo) {
+            const mensaje = document.getElementById('mensaje');
+            mensaje.textContent = texto;
+            mensaje.className = `mensaje ${tipo}`;
+            mensaje.style.display = 'block';
+            setTimeout(() => { mensaje.style.display = 'none'; }, 3000);
+        }
+        
+        cargarEstado();
+        setInterval(cargarEstado, 2000);
+    </script>
+</body>
+</html>
