@@ -408,30 +408,4 @@ docker exec distribuidor-1 sqlite3 /data/distribuidor_1.db \
   "SELECT tipo_combustible, SUM(litros), SUM(total) FROM transacciones GROUP BY tipo_combustible"
 ```
 
-## 🤝 Contribución
 
-Las contribuciones son bienvenidas. Por favor:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto es parte del curso de Sistemas Distribuidos de la Universidad de Talca.
-
-## 👥 Autores
-
-- **Desarrollador Principal**: [@1Bnja](https://github.com/1Bnja)
-
-## 🙏 Agradecimientos
-
-- Universidad de Talca - Facultad de Ingeniería
-- Curso de Sistemas Distribuidos
-- Comunidad de Docker y Flask
-
----
-
-**⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub**
