@@ -1,99 +1,199 @@
-# Sistema de Gestión de Combustibles
+# Sistema de Gestión de Gasolineras# Sistema de Gestión de Combustibles
 
-Sistema distribuido de tres niveles para la gestión de estaciones de servicio con sincronización en tiempo real.
 
-## 🚀 Inicio Rápido
 
-```bash
-# Clonar el repositorio
-git clone https://github.com/tu-usuario/sistema-combustibles.git
+Sistema distribuido para gestión de precios y transacciones de combustible.Sistema distribuido de tres niveles para la gestión de estaciones de servicio con sincronización en tiempo real.
+
+
+
+## Inicio Rápido## 🚀 Inicio Rápido
+
+
+
+```bash```bash
+
+docker-compose up -d --build# Clonar el repositorio
+
+```git clone https://github.com/tu-usuario/sistema-combustibles.git
+
 cd sistema-combustibles
 
-# Iniciar el sistema
-docker-compose up --build
+Abrir `INDEX.html` en el navegador.
 
-# Acceder a la interfaz
-# Abrir INDEX.html en tu navegador
+# Iniciar el sistema
+
+## Requisitosdocker-compose up --build
+
+
+
+- Docker# Acceder a la interfaz
+
+- Docker Compose# Abrir INDEX.html en tu navegador
+
 ```
+
+## Arquitectura
 
 ## 📋 Requisitos
 
-- Docker Desktop
-- Docker Compose
-- Puertos disponibles: 5000-5001, 6001-6003, 8001-8003
-
-## 🏗️ Arquitectura
-
 ```
+
+Casa Matriz (Puerto 5000)- Docker Desktop
+
+├── Distribuidor 1 (Puerto 8001) → 4 surtidores- Docker Compose
+
+├── Distribuidor 2 (Puerto 8002) → 4 surtidores  - Puertos disponibles: 5000-5001, 6001-6003, 8001-8003
+
+└── Distribuidor 3 (Puerto 8003) → 4 surtidores
+
+```## 🏗️ Arquitectura
+
+
+
+**Comunicación:** TCP Sockets (Puerto 9999 Casa Matriz, 7771-7773 Distribuidores)```
+
 Casa Matriz (localhost:5000)
-    ├── Distribuidor 1 (localhost:8001)
-    │   ├── Surtidor 1.1
-    │   ├── Surtidor 1.2
-    │   ├── Surtidor 1.3
-    │   └── Surtidor 1.4
-    ├── Distribuidor 2 (localhost:8002)
-    │   └── ... 4 surtidores
-    └── Distribuidor 3 (localhost:8003)
-        └── ... 4 surtidores
-```
 
-## 🎯 Características
+## Tipos de Combustible    ├── Distribuidor 1 (localhost:8001)
+
+    │   ├── Surtidor 1.1
+
+- Gasolina 93, 95, 97    │   ├── Surtidor 1.2
+
+- Diesel    │   ├── Surtidor 1.3
+
+- Kerosene    │   └── Surtidor 1.4
+
+    ├── Distribuidor 2 (localhost:8002)
+
+## Funcionalidades    │   └── ... 4 surtidores
+
+    └── Distribuidor 3 (localhost:8003)
+
+**Casa Matriz**        └── ... 4 surtidores
+
+- Actualizar precios globalmente```
+
+- Ver distribuidores conectados
+
+- Estadísticas en tiempo real## 🎯 Características
+
+- Control de simulación
 
 - **Casa Matriz**: Control centralizado de precios
-- **3 Distribuidores**: Gestión local con modo autónomo
-- **12 Surtidores**: 5 tipos de combustible cada uno
-- **Sincronización TCP/IP** en tiempo real
-- **Persistencia SQLite** con backups automáticos
+
+**Distribuidores**- **3 Distribuidores**: Gestión local con modo autónomo
+
+- Modo autónomo- **12 Surtidores**: 5 tipos de combustible cada uno
+
+- Sincronizar precios- **Sincronización TCP/IP** en tiempo real
+
+- Registrar transacciones- **Persistencia SQLite** con backups automáticos
+
+- Gestionar 4 surtidores
 
 ## 🌐 Acceso
 
-| Componente | URL |
-|-----------|-----|
-| Página Principal | `INDEX.html` |
-| Casa Matriz | http://localhost:5000 |
-| Distribuidor 1 | http://localhost:8001 |
-| Distribuidor 2 | http://localhost:8002 |
-| Distribuidor 3 | http://localhost:8003 |
+**Surtidores**
 
-## 🛠️ Comandos Útiles
+- Dispensar combustible| Componente | URL |
+
+- Contadores acumulativos|-----------|-----|
+
+- Estados: LIBRE / EN_OPERACION| Página Principal | `INDEX.html` |
+
+| Casa Matriz | http://localhost:5000 |
+
+## Acceso| Distribuidor 1 | http://localhost:8001 |
+
+| Distribuidor 2 | http://localhost:8002 |
+
+- Casa Matriz: http://localhost:5000| Distribuidor 3 | http://localhost:8003 |
+
+- Distribuidor 1: http://localhost:8001
+
+- Distribuidor 2: http://localhost:8002## 🛠️ Comandos Útiles
+
+- Distribuidor 3: http://localhost:8003
 
 ```bash
-# Detener el sistema
+
+## Comandos# Detener el sistema
+
 docker-compose down
 
-# Ver logs
-docker-compose logs -f
+```bash
 
-# Reiniciar un componente
-docker-compose restart casa-matriz
+# Detener# Ver logs
 
-# Borrar datos (incluye volúmenes)
-docker-compose down -v
-```
+docker-compose downdocker-compose logs -f
 
-## 📁 Estructura
 
-```
-.
-├── casa_matriz/          # Servidor central
-│   ├── app.py
+
+# Ver logs# Reiniciar un componente
+
+docker-compose logs -fdocker-compose restart casa-matriz
+
+
+
+# Borrar datos# Borrar datos (incluye volúmenes)
+
+docker-compose down -vdocker-compose down -v
+
+``````
+
+
+
+## Estructura## 📁 Estructura
+
+
+
+``````
+
+Proyecto2SD/.
+
+├── casa_matriz/├── casa_matriz/          # Servidor central
+
+│   ├── app.py│   ├── app.py
+
+│   ├── static/│   └── templates/
+
+│   │   ├── css/├── distribuidor/         # Servidores locales
+
+│   │   └── js/│   ├── app.py
+
+│   └── templates/│   └── templates/
+
+├── distribuidor/├── docker-compose.yml    # Configuración Docker
+
+│   ├── app.py└── INDEX.html           # Página de navegación
+
+│   ├── static/```
+
+│   │   ├── css/
+
+│   │   └── js/## 🎨 Tecnologías
+
 │   └── templates/
-├── distribuidor/         # Servidores locales
-│   ├── app.py
-│   └── templates/
-├── docker-compose.yml    # Configuración Docker
-└── INDEX.html           # Página de navegación
-```
 
-## 🎨 Tecnologías
+├── docker-compose.yml- Python 3.11
 
-- Python 3.11
-- Flask
-- SQLite
+└── INDEX.html- Flask
+
+```- SQLite
+
 - Docker
+
+## Tecnologías- TCP Sockets
+
+
+
+- Python 3.11## 👥 Equipo
+
+- Flask
+
+- SQLiteUniversidad de Talca - Proyecto 2 Sistemas Distribuidos
+
+- Docker
+
 - TCP Sockets
-
-## 👥 Equipo
-
-Universidad de Talca - Proyecto 2 Sistemas Distribuidos
-
