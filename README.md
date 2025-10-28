@@ -2,13 +2,17 @@
 
 
 
-Sistema distribuido para la gestión de precios y transacciones de combustible con arquitectura Casa Matriz - Distribuidores - Surtidores.[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://www.docker.com/)
+Sistema distribuido para la gestión de precios y transacciones de combustible con arquitectura Casa Matriz - Distribuidores - Surtidores.
+
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://www.docker.com/)
 
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)](https://www.python.org/)
 
-## Características[![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask)](https://flask.palletsprojects.com/)
+[![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask)](https://flask.palletsprojects.com/)
 
 [![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite)](https://www.sqlite.org/)
+
+## Características
 
 - **Casa Matriz**: Control centralizado de precios y monitoreo de transacciones
 
