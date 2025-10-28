@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surtidor {{ surtidor_id }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-card: #1e293b;
+            --bg-tertiary: #1f2937;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --border-color: #334155;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-primary);
+        }
+        .container { max-width: 900px; width: 100%; }
+        .nav-header { text-align: center; margin-bottom: 20px; }
+        .nav-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        .nav-link:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        .card {
+            background: var(--bg-card);
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+        h1 { text-align: center; margin-bottom: 8px; font-size: 1.75rem; font-weight: 700; }
+        .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 1rem; }
+        .estado-display {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .estado-libre {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 2px solid var(--accent-green);
+        }
+        .estado-operacion {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-orange);
+            border: 2px solid var(--accent-orange);
+            animation: pulse 1.5s infinite;
+        }
+        .estado-en-operacion {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-orange);
+            border: 2px solid var(--accent-orange);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .precios-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+        .precio-card {
+            padding: 14px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .precio-label { font-weight: 500; color: var(--text-secondary); font-size: 0.9375rem; }
+        .precio-valor { font-size: 1.125rem; color: var(--accent-green); font-weight: 700; }
+        .dispensar-section {
+            background: var(--bg-tertiary);
+            padding: 24px;
+            border-radius: 8px;
+            margin-top: 24px;
+            border: 1px solid var(--border-color);
+        }
+        .dispensar-section h3 { margin-bottom: 20px; font-size: 1.125rem; font-weight: 600; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: border-color 0.3s;
+        }
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .contadores-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 20px; }
+        .contador-card {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .contador-valor {
+            font-size: 1.375rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .contador-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .mensaje {
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 16px;
+            display: none;
+            font-size: 0.875rem;
+        }
+        .mensaje.success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .mensaje.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .section-title {
+            margin-top: 28px;
+            margin-bottom: 16px;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-header">
+            <a href="/" class="nav-link">Volver a Distribuidor {{ distribuidor_id }}</a>
+        </div>
+        <div class="card">
+            <h1>Surtidor {{ surtidor_id }}</h1>
+            <p class="subtitle">Sistema Multifunción - 5 Combustibles</p>
+            <div id="estado-display" class="estado-display estado-libre">LIBRE</div>
+            <h3 class="section-title">Precios Actuales</h3>
+            <div class="precios-grid" id="precios-grid"></div>
+            <div class="dispensar-section">
+                <h3>Simular Dispensado</h3>
+                <div class="form-group">
+                    <label for="tipo-combustible">Tipo de Combustible</label>
+                    <select id="tipo-combustible">
+                        <option value="93">Gasolina 93</option>
+                        <option value="95">Gasolina 95</option>
+                        <option value="97">Gasolina 97</option>
+                        <option value="diesel">Diesel</option>
+                        <option value="kerosene">Kerosene</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="litros">Litros a Dispensar</label>
+                    <input type="number" id="litros" min="1" max="100" value="40" step="0.1">
+                </div>
+                <button class="btn btn-primary" id="btn-dispensar" onclick="dispensar()">Iniciar Dispensado</button>
+                <div id="mensaje" class="mensaje"></div>
+            </div>
+            <h3 class="section-title">Contadores Acumulativos</h3>
+            <div class="contadores-grid" id="contadores-grid"></div>
+        </div>
+    </div>
+    <script>
+        const surtidorNum = '{{ surtidor_id }}'.split('.')[1];
+        let estadoActual = 'LIBRE';
+        const labels = {'93':'Gasolina 93','95':'Gasolina 95','97':'Gasolina 97','diesel':'Diesel','kerosene':'Kerosene'};
+        async function cargarEstado() {
+            try {
+                const response = await fetch(`/api/surtidor/${surtidorNum}/estado`);
+                const data = await response.json();
+                estadoActual = data.estado;
+                const display = document.getElementById('estado-display');
+                display.textContent = data.estado;
+                display.className = `estado-display estado-${data.estado.toLowerCase().replace('_', '-')}`;
+                const btn = document.getElementById('btn-dispensar');
+                btn.disabled = data.estado !== 'LIBRE';
+                
+                // Actualizar contadores si están disponibles
+                if (data.contadores) {
+                    const html = Object.entries(data.contadores).map(([tipo, stats]) =>
+                        `<div class="contador-card"><div class="contador-valor">${(stats.litros || 0).toFixed(1)}</div>
+                        <div class="contador-label">${labels[tipo]||tipo}</div></div>`).join('');
+                    document.getElementById('contadores-grid').innerHTML = html;
+                }
+            } catch (error) { console.error('Error:', error); }
+        }
+        async function cargarPrecios() {
+            try {
+                const response = await fetch('/api/estado');
+                const data = await response.json();
+                const precios = data.precios || {};
+                const html = Object.entries(precios).map(([tipo, precio]) =>
+                    `<div class="precio-card"><span class="precio-label">${labels[tipo]||tipo}:</span>
+                    <span class="precio-valor">$${precio}</span></div>`).join('');
+                document.getElementById('precios-grid').innerHTML = html;
+            } catch (error) { console.error('Error:', error); }
+        }
+        async function cargarContadores() {
+            try {
+                const response = await fetch(`/api/surtidor/${surtidorNum}/contadores`);
+                const data = await response.json();
+                const html = Object.entries(data).map(([tipo, litros]) =>
+                    `<div class="contador-card"><div class="contador-valor">${litros.toFixed(1)}</div>
+                    <div class="contador-label">${labels[tipo]||tipo}</div></div>`).join('');
+                document.getElementById('contadores-grid').innerHTML = html;
+            } catch (error) { console.error('Error:', error); }
+        }
+        async function dispensar() {
+            const tipo = document.getElementById('tipo-combustible').value;
+            const litros = parseFloat(document.getElementById('litros').value);
+            if (!litros || litros <= 0) {
+                mostrarMensaje('Ingrese una cantidad válida', 'error');
+                return;
+            }
+            try {
+                const response = await fetch(`/api/surtidor/${surtidorNum}/dispensar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tipo_combustible: tipo, litros: litros })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    mostrarMensaje(`Dispensando ${litros}L de ${labels[tipo]}...`, 'success');
+                } else {
+                    mostrarMensaje(result.error || 'Error al dispensar', 'error');
+                }
+            } catch (error) {
+                mostrarMensaje('Error de conexión', 'error');
+            }
+        }
+        function mostrarMensaje(texto, tipo) {
+            const msg = document.getElementById('mensaje');
+            msg.textContent = texto;
+            msg.className = `mensaje ${tipo}`;
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+        cargarEstado(); cargarPrecios();
+        setInterval(() => { cargarEstado(); }, 1000);
+    </script>
+</body>
+</html>

@@ -4,58 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Casa Matriz - Sistema de Combustibles</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #151b2d;
+            --bg-tertiary: #1f2937;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --border-color: #334155;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Inter', sans-serif;
-            background: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
             min-height: 100vh;
-            color: #212529;
         }
         
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
         
         header {
-            background: linear-gradient(to right, #1e3a8a, #3b82f6);
-            color: white;
-            padding: 28px 30px;
-            margin: -20px -20px 30px -20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
         }
         
-        h1 { font-size: 1.75em; font-weight: 600; }
-        .subtitle { opacity: 0.95; margin-top: 6px; font-size: 0.9em; font-weight: 400; }
+        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { color: var(--text-secondary); font-size: 1rem; margin-bottom: 24px; }
         
-        .nav-links { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+        .nav-links { display: flex; gap: 12px; flex-wrap: wrap; }
         .nav-link {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.2);
-            color: white;
+            padding: 10px 20px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
             text-decoration: none;
-            border-radius: 6px;
-            font-size: 0.875em;
-            transition: background 0.2s;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
-        .nav-link:hover { background: rgba(255,255,255,0.3); }
+        .nav-link:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 24px; }
         
         .card {
-            background: white;
-            padding: 24px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #dee2e6;
+            background: var(--bg-card);
+            padding: 28px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
         
         .card h2 {
-            color: #212529;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #1e3a8a;
-            font-size: 1.1em;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent-blue);
+            font-size: 1.25rem;
             font-weight: 600;
         }
         
@@ -63,94 +85,159 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 3px solid #3b82f6;
+            margin-bottom: 16px;
+            padding: 14px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-blue);
         }
         
-        .precio-label { font-weight: 500; color: #495057; }
+        .precio-label { 
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+        }
         
         .precio-input {
-            width: 140px;
-            padding: 8px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 0.95em;
+            width: 150px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9375rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: border-color 0.3s;
         }
-        .precio-input:focus { outline: none; border-color: #3b82f6; }
+        .precio-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
         
         .btn {
-            background: #1e3a8a;
+            background: var(--accent-blue);
             color: white;
-            padding: 10px 24px;
+            padding: 12px 28px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95em;
+            font-size: 0.9375rem;
             font-weight: 500;
-            transition: background 0.2s;
+            transition: all 0.3s;
+            margin-top: 8px;
         }
-        .btn:hover { background: #1e40af; }
-        .btn-success { background: #059669; }
-        .btn-success:hover { background: #047857; }
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
         
-        .distribuidores-list { margin-top: 14px; }
-        .distribuidor-item {
-            padding: 14px;
-            margin-bottom: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 3px solid #059669;
+        .btn-success { background: var(--accent-green); }
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
-        .distribuidor-item.inactivo { border-left-color: #dc3545; opacity: 0.7; }
+        
+        .btn-danger { background: var(--accent-red); }
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-warning { background: var(--accent-orange); }
+        .btn-warning:hover {
+            background: #d97706;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+        
+        .distribuidores-list { margin-top: 16px; }
+        .distribuidor-item {
+            padding: 16px;
+            margin-bottom: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-green);
+            transition: transform 0.2s;
+        }
+        .distribuidor-item:hover { transform: translateX(4px); }
+        .distribuidor-item.inactivo { border-left-color: var(--accent-red); opacity: 0.6; }
         
         .dist-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .dist-id { font-weight: 600; color: #212529; }
+        .dist-id { font-weight: 600; color: var(--text-primary); font-size: 1rem; }
         .dist-status {
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            font-weight: 500;
-        }
-        .dist-status.activo { background: #d1fae5; color: #065f46; }
-        .dist-status.inactivo { background: #fee2e2; color: #991b1b; }
-        
-        .dist-info { font-size: 0.85em; color: #6c757d; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px; }
-        .stat-card {
-            padding: 14px;
+            padding: 6px 12px;
             border-radius: 6px;
-            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .stat-value { font-size: 1.4em; font-weight: 600; margin-bottom: 4px; }
-        .stat-label { font-size: 0.75em; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; }
+        .dist-status.activo { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .dist-status.inactivo { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
         
-        .g93 { background: #dbeafe; border-left: 3px solid #3b82f6; }
-        .g93 .stat-value { color: #1e40af; }
+        .dist-info { font-size: 0.875rem; color: var(--text-muted); }
         
-        .g95 { background: #ede9fe; border-left: 3px solid #8b5cf6; }
-        .g95 .stat-value { color: #6d28d9; }
-        
-        .g97 { background: #fce7f3; border-left: 3px solid #ec4899; }
-        .g97 .stat-value { color: #be185d; }
-        
-        .diesel { background: #fed7aa; border-left: 3px solid #f59e0b; }
-        .diesel .stat-value { color: #b45309; }
-        
-        .kerosene { background: #d1fae5; border-left: 3px solid #10b981; }
-        .kerosene .stat-value { color: #047857; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+        .stat-card {
+            padding: 20px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            text-align: center;
+            border-left: 3px solid var(--accent-blue);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .stat-label {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
         
         .mensaje {
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-top: 16px;
             display: none;
+            font-size: 0.875rem;
         }
-        .mensaje.success { background: #d1fae5; color: #065f46; }
-        .mensaje.error { background: #fee2e2; color: #991b1b; }
+        .mensaje.success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .mensaje.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .fuel-stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .fuel-card {
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .fuel-card.g93 { border-left: 3px solid #3b82f6; }
+        .fuel-card.g95 { border-left: 3px solid #8b5cf6; }
+        .fuel-card.g97 { border-left: 3px solid #ec4899; }
+        .fuel-card.diesel { border-left: 3px solid #f59e0b; }
+        .fuel-card.kerosene { border-left: 3px solid #10b981; }
+        
+        .fuel-type { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
+        .fuel-amount { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+        .fuel-unit { font-size: 0.875rem; color: var(--text-secondary); margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -179,56 +266,89 @@
             </div>
         </div>
         
+        <div class="card">
+            <h2>Control de Simulación</h2>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="iniciarSimulacion()">Iniciar Simulación</button>
+                <button class="btn btn-danger" onclick="detenerSimulacion()">Detener Simulación</button>
+                <button class="btn btn-warning" onclick="reiniciarSimulacion()">Reiniciar Simulación</button>
+            </div>
+            <div id="mensaje-simulacion" class="mensaje"></div>
+            <div id="simulacion-status" style="margin-top: 20px;"></div>
+        </div>
+        
         <div class="grid">
             <div class="card">
                 <h2>Estadísticas en Tiempo Real</h2>
-                <div id="stats-tiempo-real"></div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-transacciones">0</div>
+                        <div class="stat-label">Transacciones</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-litros">0</div>
+                        <div class="stat-label">Litros</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-ingresos">$0</div>
+                        <div class="stat-label">Ingresos</div>
+                    </div>
+                </div>
             </div>
             
             <div class="card">
-                <h2>Resumen de Ventas</h2>
-                <div id="stats-grid" class="stats-grid"></div>
+                <h2>Gestión de Datos</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9375rem;">
+                    Eliminar todos los datos del sistema (transacciones, precios históricos, etc.)
+                </p>
+                <button class="btn btn-danger" onclick="confirmarBorrarDatos()">Borrar Todos los Datos</button>
+                <div id="mensaje-borrar" class="mensaje"></div>
             </div>
+        </div>
+        
+        <div class="card">
+            <h2>Resumen por Combustible</h2>
+            <div id="fuel-summary"></div>
         </div>
     </div>
     
     <script>
         let preciosActuales = {};
+        const TIPOS_COMBUSTIBLE = ['93', '95', '97', 'diesel', 'kerosene'];
         
         async function cargarPrecios() {
             try {
                 const response = await fetch('/api/precios');
-                preciosActuales = await response.json();
-                
-                const preciosHtml = Object.entries(preciosActuales).map(([tipo, precio]) => {
-                    const nombre = {
-                        '93': 'Gasolina 93',
-                        '95': 'Gasolina 95',
-                        '97': 'Gasolina 97',
-                        'diesel': 'Diesel',
-                        'kerosene': 'Kerosene'
-                    }[tipo];
-                    return `
-                        <div class="precio-item">
-                            <span class="precio-label">${nombre}</span>
-                            <input type="number" class="precio-input" id="precio-${tipo}" value="${precio}" min="0">
-                        </div>
-                    `;
-                }).join('');
-                
-                document.getElementById('precios-form').innerHTML = preciosHtml;
+                const data = await response.json();
+                preciosActuales = data;
+                renderPrecios();
             } catch (error) {
-                console.error('Error cargando precios:', error);
+                console.error('Error al cargar precios:', error);
             }
+        }
+        
+        function renderPrecios() {
+            const form = document.getElementById('precios-form');
+            form.innerHTML = TIPOS_COMBUSTIBLE.map(tipo => {
+                const label = tipo === '93' ? 'Gasolina 93' :
+                             tipo === '95' ? 'Gasolina 95' :
+                             tipo === '97' ? 'Gasolina 97' :
+                             tipo === 'diesel' ? 'Diesel' : 'Kerosene';
+                return `
+                    <div class="precio-item">
+                        <span class="precio-label">${label}</span>
+                        <input type="number" id="precio-${tipo}" class="precio-input"
+                               value="${preciosActuales[tipo] || 0}" step="0.01" min="0">
+                    </div>
+                `;
+            }).join('');
         }
         
         async function actualizarPrecios() {
             const nuevosPrecios = {};
-            Object.keys(preciosActuales).forEach(tipo => {
+            TIPOS_COMBUSTIBLE.forEach(tipo => {
                 const input = document.getElementById(`precio-${tipo}`);
-                if (input) {
-                    nuevosPrecios[tipo] = parseInt(input.value);
-                }
+                nuevosPrecios[tipo] = parseFloat(input.value) || 0;
             });
             
             try {
@@ -237,107 +357,166 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(nuevosPrecios)
                 });
-                
                 const result = await response.json();
-                mostrarMensaje(result.message, result.status);
-                cargarDistribuidores();
+                mostrarMensaje('mensaje-precios', 'Precios actualizados correctamente', 'success');
+                await cargarDatos();
             } catch (error) {
-                mostrarMensaje('Error al actualizar precios', 'error');
+                mostrarMensaje('mensaje-precios', 'Error al actualizar precios', 'error');
             }
         }
         
         async function cargarDistribuidores() {
             try {
                 const response = await fetch('/api/distribuidores');
-                const distribuidores = await response.json();
-                
-                const html = distribuidores.map(dist => `
-                    <div class="distribuidor-item ${dist.activo ? '' : 'inactivo'}">
+                const data = await response.json();
+                const list = document.getElementById('distribuidores-list');
+                const distributors = Array.isArray(data) ? data : [];
+                list.innerHTML = distributors.map(d => `
+                    <div class="distribuidor-item ${d.activo ? '' : 'inactivo'}">
                         <div class="dist-header">
-                            <span class="dist-id">Distribuidor ${dist.id}</span>
-                            <span class="dist-status ${dist.activo ? 'activo' : 'inactivo'}">
-                                ${dist.activo ? 'Activo' : 'Inactivo'}
+                            <span class="dist-id">Distribuidor ${d.id}</span>
+                            <span class="dist-status ${d.activo ? 'activo' : 'inactivo'}">
+                                ${d.activo ? 'Activo' : 'Inactivo'}
                             </span>
                         </div>
-                        <div class="dist-info">
-                            Surtidores: ${dist.surtidores} | Transacciones: ${dist.total_transacciones}
-                        </div>
+                        <div class="dist-info">Surtidores: ${d.surtidores || 4} | Transacciones: ${d.total_transacciones || 0}</div>
                     </div>
                 `).join('');
-                
-                document.getElementById('distribuidores-list').innerHTML = html || '<p style="color: #6c757d;">No hay distribuidores conectados</p>';
-                
-                const statsHtml = `
-                    <div style="padding: 14px; background: #f8f9fa; border-radius: 6px; margin-bottom: 10px;">
-                        <div style="font-weight: 500; margin-bottom: 8px;">Distribuidores Activos</div>
-                        <div style="font-size: 2em; font-weight: 600; color: #1e3a8a;">${distribuidores.filter(d => d.activo).length} / ${distribuidores.length}</div>
-                    </div>
-                    <div style="padding: 14px; background: #f8f9fa; border-radius: 6px;">
-                        <div style="font-weight: 500; margin-bottom: 8px;">Total Transacciones</div>
-                        <div style="font-size: 2em; font-weight: 600; color: #059669;">${distribuidores.reduce((sum, d) => sum + d.total_transacciones, 0)}</div>
-                    </div>
-                `;
-                document.getElementById('stats-tiempo-real').innerHTML = statsHtml;
-                
             } catch (error) {
-                console.error('Error cargando distribuidores:', error);
+                console.error('Error al cargar distribuidores:', error);
             }
         }
         
-        async function cargarReporte() {
+        async function cargarEstadisticas() {
             try {
                 const response = await fetch('/api/reporte');
-                const reporte = await response.json();
+                const data = await response.json();
+                const trans = data.transacciones || [];
                 
-                const statsHtml = Object.entries(reporte.ventas_por_combustible).map(([tipo, datos]) => {
-                    const nombre = {
-                        '93': 'G93',
-                        '95': 'G95',
-                        '97': 'G97',
-                        'diesel': 'Diesel',
-                        'kerosene': 'Kerosene'
-                    }[tipo];
-                    
-                    const claseCSS = {
-                        '93': 'g93',
-                        '95': 'g95',
-                        '97': 'g97',
-                        'diesel': 'diesel',
-                        'kerosene': 'kerosene'
-                    }[tipo];
-                    
+                document.getElementById('total-transacciones').textContent = trans.length;
+                
+                const totalLitros = trans.reduce((sum, t) => sum + (t.litros || 0), 0);
+                document.getElementById('total-litros').textContent = totalLitros.toFixed(2);
+                
+                const totalIngresos = trans.reduce((sum, t) => sum + (t.total || 0), 0);
+                document.getElementById('total-ingresos').textContent = `$${totalIngresos.toFixed(0)}`;
+                
+                // Resumen por combustible
+                const porCombustible = {};
+                TIPOS_COMBUSTIBLE.forEach(tipo => {
+                    porCombustible[tipo] = { cantidad: 0, litros: 0, monto: 0 };
+                });
+                
+                trans.forEach(t => {
+                    if (porCombustible[t.tipo_combustible]) {
+                        porCombustible[t.tipo_combustible].cantidad++;
+                        porCombustible[t.tipo_combustible].litros += t.litros || 0;
+                        porCombustible[t.tipo_combustible].monto += t.total || 0;
+                    }
+                });
+                
+                const summary = document.getElementById('fuel-summary');
+                summary.innerHTML = '<div class="fuel-stats">' + TIPOS_COMBUSTIBLE.map((tipo, idx) => {
+                    const stats = porCombustible[tipo];
+                    const className = tipo.startsWith('9') ? 'g' + tipo : tipo;
+                    const label = tipo === '93' ? 'Gasolina 93' :
+                                 tipo === '95' ? 'Gasolina 95' :
+                                 tipo === '97' ? 'Gasolina 97' :
+                                 tipo === 'diesel' ? 'Diesel' : 'Kerosene';
                     return `
-                        <div class="stat-card ${claseCSS}">
-                            <div class="stat-value">${datos.litros.toFixed(1)}L</div>
-                            <div class="stat-label">${nombre}</div>
-                            <div class="stat-info" style="font-size: 0.7em; margin-top: 4px; color: #6c757d;">
-                                ${datos.transacciones} ventas
-                            </div>
+                        <div class="fuel-card ${className}">
+                            <div class="fuel-type">${label}</div>
+                            <div class="fuel-amount">${stats.cantidad}</div>
+                            <div class="fuel-unit">${stats.litros.toFixed(1)}L - $${stats.monto.toFixed(0)}</div>
                         </div>
                     `;
-                }).join('');
-                
-                document.getElementById('stats-grid').innerHTML = statsHtml;
+                }).join('') + '</div>';
             } catch (error) {
-                console.error('Error cargando reporte:', error);
+                console.error('Error al cargar estadísticas:', error);
             }
         }
         
-        function mostrarMensaje(texto, tipo) {
-            const mensaje = document.getElementById('mensaje-precios');
-            mensaje.textContent = texto;
-            mensaje.className = `mensaje ${tipo}`;
-            mensaje.style.display = 'block';
-            setTimeout(() => { mensaje.style.display = 'none'; }, 3000);
+        async function iniciarSimulacion() {
+            try {
+                const response = await fetch('/api/simulacion/global/iniciar', { method: 'POST' });
+                const result = await response.json();
+                mostrarMensaje('mensaje-simulacion', result.mensaje || 'Simulación iniciada', 'success');
+                await actualizarEstadoSimulacion();
+            } catch (error) {
+                mostrarMensaje('mensaje-simulacion', 'Error al iniciar simulación', 'error');
+            }
         }
         
-        cargarPrecios();
-        cargarDistribuidores();
-        cargarReporte();
-        setInterval(() => {
-            cargarDistribuidores();
-            cargarReporte();
-        }, 3000);
+        async function detenerSimulacion() {
+            try {
+                const response = await fetch('/api/simulacion/global/detener', { method: 'POST' });
+                const result = await response.json();
+                mostrarMensaje('mensaje-simulacion', result.mensaje || 'Simulación detenida', 'success');
+                await actualizarEstadoSimulacion();
+            } catch (error) {
+                mostrarMensaje('mensaje-simulacion', 'Error al detener simulación', 'error');
+            }
+        }
+        
+        async function reiniciarSimulacion() {
+            await detenerSimulacion();
+            setTimeout(async () => {
+                await iniciarSimulacion();
+            }, 1000);
+        }
+        
+        async function actualizarEstadoSimulacion() {
+            try {
+                const response = await fetch('/api/simulacion/global/estado');
+                const data = await response.json();
+                const statusDiv = document.getElementById('simulacion-status');
+                const estados = data.estados || [];
+                statusDiv.innerHTML = '<div style="display: flex; gap: 12px; flex-wrap: wrap;">' +
+                    estados.map(e => `
+                        <div style="flex: 1; min-width: 150px; padding: 12px; background: var(--bg-tertiary); border-radius: 8px; text-align: center;">
+                            <div style="font-size: 0.875rem; color: var(--text-secondary);">${e.nombre}</div>
+                            <div style="font-weight: 600; color: ${e.activa ? 'var(--accent-green)' : 'var(--text-muted)'}; margin-top: 4px;">
+                                ${e.activa ? 'Activa' : 'Detenida'}
+                            </div>
+                        </div>
+                    `).join('') + '</div>';
+            } catch (error) {
+                console.error('Error al obtener estado:', error);
+            }
+        }
+        
+        async function confirmarBorrarDatos() {
+            if (confirm('¿Estás seguro de borrar TODOS los datos? Esta acción no se puede deshacer.')) {
+                try {
+                    const response = await fetch('/api/borrar-todos-datos', { method: 'POST' });
+                    const result = await response.json();
+                    mostrarMensaje('mensaje-borrar', 'Todos los datos han sido eliminados', 'success');
+                    await cargarDatos();
+                } catch (error) {
+                    mostrarMensaje('mensaje-borrar', 'Error al borrar datos', 'error');
+                }
+            }
+        }
+        
+        function mostrarMensaje(elementId, mensaje, tipo) {
+            const elem = document.getElementById(elementId);
+            elem.textContent = mensaje;
+            elem.className = `mensaje ${tipo}`;
+            elem.style.display = 'block';
+            setTimeout(() => {
+                elem.style.display = 'none';
+            }, 3000);
+        }
+        
+        async function cargarDatos() {
+            await cargarPrecios();
+            await cargarDistribuidores();
+            await cargarEstadisticas();
+            await actualizarEstadoSimulacion();
+        }
+        
+        cargarDatos();
+        setInterval(cargarDatos, 3000);
     </script>
 </body>
 </html>

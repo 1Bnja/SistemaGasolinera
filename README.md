@@ -1,98 +1,193 @@
-# 🏢 Sistema Distribuido de Gestión de Combustibles
+# Sistema de Gestión de Gasolineras# 🏢 Sistema Distribuido de Gestión de Combustibles
 
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://www.docker.com/)
+
+
+Sistema distribuido para la gestión de precios y transacciones de combustible con arquitectura Casa Matriz - Distribuidores - Surtidores.[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://www.docker.com/)
+
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask)](https://flask.palletsprojects.com/)
+
+## Características[![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask)](https://flask.palletsprojects.com/)
+
 [![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite)](https://www.sqlite.org/)
 
-> Sistema distribuido de tres capas para la gestión integral de estaciones de servicio con arquitectura de microservicios
+- **Casa Matriz**: Control centralizado de precios y monitoreo de transacciones
 
-## 📋 Tabla de Contenidos
+- **3 Distribuidores**: Gestión local con modo autónomo> Sistema distribuido de tres capas para la gestión integral de estaciones de servicio con arquitectura de microservicios
+
+- **12 Surtidores**: 4 por distribuidor, multifunción (5 tipos de combustible)
+
+- **Sincronización en tiempo real** vía TCP sockets## 📋 Tabla de Contenidos
+
+- **Persistencia de datos** con SQLite
 
 - [Descripción](#-descripción)
-- [Arquitectura](#-arquitectura)
+
+## Tipos de Combustible- [Arquitectura](#-arquitectura)
+
 - [Características](#-características)
-- [Tecnologías](#-tecnologías)
-- [Requisitos Previos](#-requisitos-previos)
-- [Instalación](#-instalación)
-- [Uso](#-uso)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
+
+- Gasolina 93- [Tecnologías](#-tecnologías)
+
+- Gasolina 95- [Requisitos Previos](#-requisitos-previos)
+
+- Gasolina 97- [Instalación](#-instalación)
+
+- Diesel- [Uso](#-uso)
+
+- Kerosene- [Estructura del Proyecto](#-estructura-del-proyecto)
+
 - [Persistencia de Datos](#-persistencia-de-datos)
-- [API](#-api)
+
+## Requisitos- [API](#-api)
+
 - [Troubleshooting](#-troubleshooting)
-- [Contribución](#-contribución)
+
+- Docker- [Contribución](#-contribución)
+
+- Docker Compose
 
 ## 🎯 Descripción
 
+## Instalación y Uso
+
 Sistema distribuido de **tres niveles jerárquicos** para la gestión completa de una cadena de estaciones de servicio. Maneja **5 tipos de combustible** con sincronización automática de precios, registro de transacciones y persistencia de datos.
 
-### Tipos de Combustible
-- 🔴 Gasolina 93
+```bash
+
+# Iniciar el sistema### Tipos de Combustible
+
+docker-compose up -d --build- 🔴 Gasolina 93
+
 - 🟡 Gasolina 95  
-- 🟢 Gasolina 97
-- 🔵 Diesel
-- ⚪ Kerosene
 
-## 🏗️ Arquitectura
+# Detener el sistema- 🟢 Gasolina 97
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    🏢 CASA MATRIZ (Nivel 1)                 │
-│                  Puerto Web: 5000 | TCP: 5001               │
+docker-compose down- 🔵 Diesel
+
+```- ⚪ Kerosene
+
+
+
+## Acceso a Interfaces## 🏗️ Arquitectura
+
+
+
+- **Casa Matriz**: http://localhost:5000```
+
+- **Distribuidor 1**: http://localhost:8001┌─────────────────────────────────────────────────────────────┐
+
+- **Distribuidor 2**: http://localhost:8002│                    🏢 CASA MATRIZ (Nivel 1)                 │
+
+- **Distribuidor 3**: http://localhost:8003│                  Puerto Web: 5000 | TCP: 5001               │
+
 │                                                              │
-│  • Gestión centralizada de precios                          │
+
+Desde cada distribuidor puedes acceder a sus 4 surtidores.│  • Gestión centralizada de precios                          │
+
 │  • Reportes consolidados de ventas                          │
-│  • Monitoreo de distribuidores                              │
+
+## Estructura del Proyecto│  • Monitoreo de distribuidores                              │
+
 └──────────────────┬──────────────────┬───────────────────────┘
-                   │                  │
-         ┌─────────┴─────────┬────────┴─────────┐
-         │                   │                  │
-┌────────▼────────┐ ┌────────▼────────┐ ┌──────▼──────────┐
-│ 🏪 DISTRIBUIDOR 1│ │ 🏪 DISTRIBUIDOR 2│ │ 🏪 DISTRIBUIDOR 3│
-│ Web: 8001       │ │ Web: 8002       │ │ Web: 8003        │
-│ TCP: 6001       │ │ TCP: 6002       │ │ TCP: 6003        │
-│                 │ │                 │ │                  │
-│ • SQLite local  │ │ • SQLite local  │ │ • SQLite local   │
-│ • 4 surtidores  │ │ • 4 surtidores  │ │ • 4 surtidores   │
-└──┬───┬───┬───┬──┘ └──┬───┬───┬───┬──┘ └──┬───┬───┬───┬───┘
-   │   │   │   │       │   │   │   │       │   │   │   │
-   ▼   ▼   ▼   ▼       ▼   ▼   ▼   ▼       ▼   ▼   ▼   ▼
-  ⛽  ⛽  ⛽  ⛽       ⛽  ⛽  ⛽  ⛽       ⛽  ⛽  ⛽  ⛽
+
+```                   │                  │
+
+Proyecto2SD/         ┌─────────┴─────────┬────────┴─────────┐
+
+├── casa_matriz/         │                   │                  │
+
+│   ├── app.py┌────────▼────────┐ ┌────────▼────────┐ ┌──────▼──────────┐
+
+│   └── templates/│ 🏪 DISTRIBUIDOR 1│ │ 🏪 DISTRIBUIDOR 2│ │ 🏪 DISTRIBUIDOR 3│
+
+│       └── casa_matriz.html│ Web: 8001       │ │ Web: 8002       │ │ Web: 8003        │
+
+├── distribuidor/│ TCP: 6001       │ │ TCP: 6002       │ │ TCP: 6003        │
+
+│   ├── app.py│                 │ │                 │ │                  │
+
+│   └── templates/│ • SQLite local  │ │ • SQLite local  │ │ • SQLite local   │
+
+│       ├── distribuidor.html│ • 4 surtidores  │ │ • 4 surtidores  │ │ • 4 surtidores   │
+
+│       └── surtidor.html└──┬───┬───┬───┬──┘ └──┬───┬───┬───┬──┘ └──┬───┬───┬───┬───┘
+
+├── docker-compose.yml   │   │   │   │       │   │   │   │       │   │   │   │
+
+└── README.md   ▼   ▼   ▼   ▼       ▼   ▼   ▼   ▼       ▼   ▼   ▼   ▼
+
+```  ⛽  ⛽  ⛽  ⛽       ⛽  ⛽  ⛽  ⛽       ⛽  ⛽  ⛽  ⛽
+
  1.1 1.2 1.3 1.4    2.1 2.2 2.3 2.4    3.1 3.2 3.3 3.4
-9101 9102 9103 9104 9201 9202 9203 9204 9301 9302 9303 9304
 
-Total: 16 Contenedores Docker | 12 Surtidores | 60 Tipos de Combustible
-```
+## Arquitectura9101 9102 9103 9104 9201 9202 9203 9204 9301 9302 9303 9304
 
-### Flujo de Datos
 
-```
+
+- **Casa Matriz** (Puerto 5000): Servidor TCP en puerto 9999 para distribuidoresTotal: 16 Contenedores Docker | 12 Surtidores | 60 Tipos de Combustible
+
+- **Distribuidores** (Puertos 8001-8003): Servidores TCP locales (puertos 7771-7773)```
+
+- **Comunicación**: Sockets TCP con mensajes JSON
+
+- **Base de datos**: SQLite independiente por componente### Flujo de Datos
+
+
+
+## Funcionalidades```
+
 ┌──────────────┐    Actualización    ┌──────────────┐
-│ Casa Matriz  │ ──────Precios──────>│ Distribuidor │
-│              │<────Transacciones───│              │
-└──────────────┘                     └───────┬──────┘
-                                             │
-                                      Sincronización
-                                             │
+
+### Casa Matriz│ Casa Matriz  │ ──────Precios──────>│ Distribuidor │
+
+- Actualizar precios globales│              │<────Transacciones───│              │
+
+- Ver distribuidores conectados└──────────────┘                     └───────┬──────┘
+
+- Estadísticas en tiempo real                                             │
+
+- Control de simulación                                      Sincronización
+
+- Borrado de datos del sistema                                             │
+
                                      ┌───────▼──────┐
-                                     │   Surtidor   │
-                                     │              │
-                                     └──────────────┘
-```
+
+### Distribuidores                                     │   Surtidor   │
+
+- Modo autónomo (sin Casa Matriz)                                     │              │
+
+- Sincronización de precios                                     └──────────────┘
+
+- Registro de transacciones```
+
+- Gestión de 4 surtidores
 
 ## ✨ Características
 
-### 🔄 Sincronización
-- ✅ Actualización automática de precios en cascada
-- ✅ Sincronización de transacciones con reintentos
-- ✅ Recuperación automática ante desconexiones
-- ✅ Modo autónomo para distribuidores
+### Surtidores
 
-### 💾 Persistencia
-- ✅ Base de datos SQLite en cada distribuidor
-- ✅ Volúmenes Docker para persistencia entre reinicios
-- ✅ Sistema de backups automáticos cada 5 minutos
-- ✅ Logs de transacciones en formato JSON
+- Dispensado de combustible### 🔄 Sincronización
+
+- Contadores acumulativos por tipo- ✅ Actualización automática de precios en cascada
+
+- Estados: LIBRE / EN_OPERACION- ✅ Sincronización de transacciones con reintentos
+
+- ✅ Recuperación automática ante desconexiones
+
+## Tecnologías- ✅ Modo autónomo para distribuidores
+
+
+
+- Python 3.11### 💾 Persistencia
+
+- Flask- ✅ Base de datos SQLite en cada distribuidor
+
+- SQLite- ✅ Volúmenes Docker para persistencia entre reinicios
+
+- Docker- ✅ Sistema de backups automáticos cada 5 minutos
+
+- TCP Sockets- ✅ Logs de transacciones en formato JSON
+
 
 ### 🖥️ Interfaces
 - ✅ Interfaz web responsive para cada componente

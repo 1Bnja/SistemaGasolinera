@@ -208,6 +208,46 @@ def procesar_mensaje_casa_matriz(mensaje):
     
     if tipo == 'actualizacion_precios':
         actualizar_precios_locales(mensaje['precios'])
+    
+    elif tipo == 'borrar_datos':
+        borrar_todos_datos_local()
+
+
+def borrar_todos_datos_local():
+    global surtidores_estado
+    
+    with lock_db:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        cursor.execute('DELETE FROM transacciones')
+        cursor.execute('DELETE FROM precios_historico')
+        
+        for i in range(1, 5):
+            surt_id = f"{DISTRIBUIDOR_ID}.{i}"
+            for combustible in COMBUSTIBLES:
+                cursor.execute(f'''
+                    UPDATE surtidores 
+                    SET litros_{combustible} = 0,
+                        cargas_{combustible} = 0,
+                        estado = 'LIBRE'
+                    WHERE id = ?
+                ''', (surt_id,))
+        
+        conn.commit()
+        conn.close()
+    
+    with surtidores_lock:
+        for surt_id in surtidores_estado:
+            surtidores_estado[surt_id]['estado'] = 'LIBRE'
+            for combustible in COMBUSTIBLES:
+                surtidores_estado[surt_id]['contadores'][combustible] = {
+                    'litros': 0,
+                    'cargas': 0,
+                    'monto': 0
+                }
+    
+    print(f"Distribuidor {DISTRIBUIDOR_ID}: Todos los datos borrados", flush=True)
 
 
 def actualizar_precios_locales(precios_corporativos):
@@ -460,6 +500,242 @@ def limpiar_transacciones():
         return jsonify({'status': 'success', 'message': 'Transacciones eliminadas'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
+surtidores_estado = {}
+surtidores_lock = threading.Lock()
+
+simulacion_activa = False
+simulacion_thread = None
+simulacion_lock = threading.Lock()
+
+for i in range(1, 5):
+    surt_id = f"{DISTRIBUIDOR_ID}.{i}"
+    surtidores_estado[surt_id] = {
+        'estado': 'LIBRE',
+        'contadores': {c: {'litros': 0, 'cargas': 0, 'monto': 0} for c in COMBUSTIBLES}
+    }
+
+
+def simulacion_automatica():
+    import random
+    global simulacion_activa
+    
+    print(f"Distribuidor {DISTRIBUIDOR_ID}: Simulación iniciada", flush=True)
+    
+    while simulacion_activa:
+        try:
+            surtidores_libres = []
+            with surtidores_lock:
+                for surt_id, estado in surtidores_estado.items():
+                    if estado['estado'] == 'LIBRE':
+                        surtidores_libres.append(surt_id)
+            
+            if surtidores_libres:
+                surtidor_elegido = random.choice(surtidores_libres)
+                combustible_elegido = random.choice(COMBUSTIBLES)
+                litros_elegidos = round(random.uniform(10, 60), 2)
+                
+                surtidor_num = surtidor_elegido.split('.')[1]
+                
+                with surtidores_lock:
+                    if surtidores_estado[surtidor_elegido]['estado'] != 'LIBRE':
+                        continue
+                
+                def _simular_carga():
+                    try:
+                        with surtidores_lock:
+                            surtidores_estado[surtidor_elegido]['estado'] = 'EN_OPERACION'
+                        
+                        actualizar_estado_surtidor_db(surtidor_elegido, 'EN_OPERACION')
+                        
+                        tiempo_dispensado = random.uniform(3, 8)
+                        time.sleep(tiempo_dispensado)
+                        
+                        precio_por_litro = precios_actuales.get(combustible_elegido, 0)
+                        total = litros_elegidos * precio_por_litro
+                        
+                        transaccion = {
+                            'tipo_combustible': combustible_elegido,
+                            'litros': litros_elegidos,
+                            'precio_por_litro': precio_por_litro,
+                            'total': total,
+                            'timestamp': datetime.now().isoformat(),
+                            'surtidor_id': surtidor_elegido
+                        }
+                        
+                        with surtidores_lock:
+                            surtidores_estado[surtidor_elegido]['contadores'][combustible_elegido]['litros'] += litros_elegidos
+                            surtidores_estado[surtidor_elegido]['contadores'][combustible_elegido]['cargas'] += 1
+                            surtidores_estado[surtidor_elegido]['contadores'][combustible_elegido]['monto'] += total
+                        
+                        registrar_transaccion(surtidor_elegido, transaccion)
+                        
+                        with surtidores_lock:
+                            surtidores_estado[surtidor_elegido]['estado'] = 'LIBRE'
+                        
+                        actualizar_estado_surtidor_db(surtidor_elegido, 'LIBRE')
+                        
+                        print(f"Simulación: Surtidor {surtidor_elegido} - {litros_elegidos}L de {combustible_elegido}", flush=True)
+                    except Exception as e:
+                        print(f"Error en simulación de carga: {e}", flush=True)
+                        with surtidores_lock:
+                            if surtidor_elegido in surtidores_estado:
+                                surtidores_estado[surtidor_elegido]['estado'] = 'LIBRE'
+                        actualizar_estado_surtidor_db(surtidor_elegido, 'LIBRE')
+                
+                thread = threading.Thread(target=_simular_carga)
+                thread.daemon = True
+                thread.start()
+            
+            intervalo = random.uniform(2, 6)
+            time.sleep(intervalo)
+            
+        except Exception as e:
+            print(f"Error en simulación automática: {e}", flush=True)
+            time.sleep(2)
+    
+    print(f"Distribuidor {DISTRIBUIDOR_ID}: Simulación detenida", flush=True)
+
+
+@app.route('/surtidor/<surtidor_num>')
+def surtidor_view(surtidor_num):
+    surtidor_id = f"{DISTRIBUIDOR_ID}.{surtidor_num}"
+    if surtidor_id not in surtidores_estado:
+        return "Surtidor no encontrado", 404
+    return render_template('surtidor.html', surtidor_id=surtidor_id, distribuidor_id=DISTRIBUIDOR_ID)
+
+
+@app.route('/api/surtidor/<surtidor_num>/estado', methods=['GET'])
+def get_surtidor_estado(surtidor_num):
+    surtidor_id = f"{DISTRIBUIDOR_ID}.{surtidor_num}"
+    if surtidor_id not in surtidores_estado:
+        return jsonify({'error': 'Surtidor no encontrado'}), 404
+    
+    with surtidores_lock:
+        estado_info = surtidores_estado[surtidor_id].copy()
+    
+    return jsonify({
+        'surtidor_id': surtidor_id,
+        'estado': estado_info['estado'],
+        'precios': precios_actuales,
+        'contadores': estado_info['contadores']
+    })
+
+
+@app.route('/api/surtidor/<surtidor_num>/dispensar', methods=['POST'])
+def dispensar_surtidor(surtidor_num):
+    surtidor_id = f"{DISTRIBUIDOR_ID}.{surtidor_num}"
+    if surtidor_id not in surtidores_estado:
+        return jsonify({'status': 'error', 'message': 'Surtidor no encontrado'}), 404
+    
+    try:
+        data = request.json
+        tipo_combustible = data.get('tipo_combustible')
+        litros = float(data.get('litros', 0))
+        
+        if tipo_combustible not in COMBUSTIBLES:
+            return jsonify({'status': 'error', 'message': 'Tipo de combustible inválido'}), 400
+        
+        if litros <= 0:
+            return jsonify({'status': 'error', 'message': 'Cantidad de litros inválida'}), 400
+        
+        with surtidores_lock:
+            if surtidores_estado[surtidor_id]['estado'] != 'LIBRE':
+                return jsonify({'status': 'error', 'message': 'Surtidor no disponible'}), 400
+        
+        def _simular_dispensado():
+            with surtidores_lock:
+                surtidores_estado[surtidor_id]['estado'] = 'EN_OPERACION'
+            
+            actualizar_estado_surtidor_db(surtidor_id, 'EN_OPERACION')
+            
+            time.sleep(2)
+            
+            precio_por_litro = precios_actuales.get(tipo_combustible, 0)
+            total = litros * precio_por_litro
+            
+            transaccion = {
+                'tipo_combustible': tipo_combustible,
+                'litros': litros,
+                'precio_por_litro': precio_por_litro,
+                'total': total,
+                'timestamp': datetime.now().isoformat(),
+                'surtidor_id': surtidor_id
+            }
+            
+            with surtidores_lock:
+                surtidores_estado[surtidor_id]['contadores'][tipo_combustible]['litros'] += litros
+                surtidores_estado[surtidor_id]['contadores'][tipo_combustible]['cargas'] += 1
+                surtidores_estado[surtidor_id]['contadores'][tipo_combustible]['monto'] += total
+            
+            registrar_transaccion(surtidor_id, transaccion)
+            
+            with surtidores_lock:
+                surtidores_estado[surtidor_id]['estado'] = 'LIBRE'
+            
+            actualizar_estado_surtidor_db(surtidor_id, 'LIBRE')
+        
+        thread = threading.Thread(target=_simular_dispensado)
+        thread.daemon = True
+        thread.start()
+        
+        return jsonify({
+            'status': 'success',
+            'message': f'Dispensando {litros}L de {tipo_combustible}'
+        })
+        
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
+def actualizar_estado_surtidor_db(surtidor_id, estado):
+    try:
+        with lock_db:
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute('UPDATE surtidores SET estado = ? WHERE id = ?', (estado, surtidor_id))
+            conn.commit()
+            conn.close()
+    except Exception as e:
+        print(f"Error actualizando estado de surtidor: {e}")
+
+
+@app.route('/api/simulacion/iniciar', methods=['POST'])
+def iniciar_simulacion():
+    global simulacion_activa, simulacion_thread
+    
+    with simulacion_lock:
+        if simulacion_activa:
+            return jsonify({'status': 'error', 'message': 'La simulación ya está activa'}), 400
+        
+        simulacion_activa = True
+        simulacion_thread = threading.Thread(target=simulacion_automatica)
+        simulacion_thread.daemon = True
+        simulacion_thread.start()
+    
+    return jsonify({'status': 'success', 'message': f'Simulación iniciada en Distribuidor {DISTRIBUIDOR_ID}'})
+
+
+@app.route('/api/simulacion/detener', methods=['POST'])
+def detener_simulacion():
+    global simulacion_activa
+    
+    with simulacion_lock:
+        if not simulacion_activa:
+            return jsonify({'status': 'error', 'message': 'La simulación no está activa'}), 400
+        
+        simulacion_activa = False
+    
+    return jsonify({'status': 'success', 'message': f'Simulación detenida en Distribuidor {DISTRIBUIDOR_ID}'})
+
+
+@app.route('/api/simulacion/estado', methods=['GET'])
+def estado_simulacion():
+    return jsonify({
+        'activa': simulacion_activa,
+        'distribuidor_id': DISTRIBUIDOR_ID
+    })
 
 
 if __name__ == '__main__':

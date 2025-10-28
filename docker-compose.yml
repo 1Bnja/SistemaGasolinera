@@ -9,6 +9,8 @@ services:
     ports:
       - "5000:5000"  # Web
       - "5001:5001"  # TCP
+    volumes:
+      - casa-matriz-data:/data
     networks:
       - fuel-network
     restart: unless-stopped
@@ -25,7 +27,7 @@ services:
       - TCP_PORT_LOCAL=6000
       - WEB_PORT=8000
     ports:
-      - "8001:8000"  # Web
+      - "8001:8000"  # Web (incluye 4 surtidores integrados)
       - "6001:6000"  # TCP
     volumes:
       - dist1-data:/data
@@ -47,7 +49,7 @@ services:
       - TCP_PORT_LOCAL=6000
       - WEB_PORT=8000
     ports:
-      - "8002:8000"  # Web
+      - "8002:8000"  # Web (incluye 4 surtidores integrados)
       - "6002:6000"  # TCP
     volumes:
       - dist2-data:/data
@@ -69,7 +71,7 @@ services:
       - TCP_PORT_LOCAL=6000
       - WEB_PORT=8000
     ports:
-      - "8003:8000"  # Web
+      - "8003:8000"  # Web (incluye 4 surtidores integrados)
       - "6003:6000"  # TCP
     volumes:
       - dist3-data:/data
@@ -79,227 +81,12 @@ services:
       - casa-matriz
     restart: unless-stopped
 
-  surtidor-1-1:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-1-1
-    environment:
-      - SURTIDOR_ID=1.1
-      - DISTRIBUIDOR_HOST=distribuidor-1
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9101:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-1
-    restart: unless-stopped
-
-  surtidor-1-2:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-1-2
-    environment:
-      - SURTIDOR_ID=1.2
-      - DISTRIBUIDOR_HOST=distribuidor-1
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9102:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-1
-    restart: unless-stopped
-
-  surtidor-1-3:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-1-3
-    environment:
-      - SURTIDOR_ID=1.3
-      - DISTRIBUIDOR_HOST=distribuidor-1
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9103:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-1
-    restart: unless-stopped
-
-  surtidor-1-4:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-1-4
-    environment:
-      - SURTIDOR_ID=1.4
-      - DISTRIBUIDOR_HOST=distribuidor-1
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9104:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-1
-    restart: unless-stopped
-
-  surtidor-2-1:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-2-1
-    environment:
-      - SURTIDOR_ID=2.1
-      - DISTRIBUIDOR_HOST=distribuidor-2
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9201:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-2
-    restart: unless-stopped
-
-  surtidor-2-2:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-2-2
-    environment:
-      - SURTIDOR_ID=2.2
-      - DISTRIBUIDOR_HOST=distribuidor-2
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9202:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-2
-    restart: unless-stopped
-
-  surtidor-2-3:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-2-3
-    environment:
-      - SURTIDOR_ID=2.3
-      - DISTRIBUIDOR_HOST=distribuidor-2
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9203:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-2
-    restart: unless-stopped
-
-  surtidor-2-4:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-2-4
-    environment:
-      - SURTIDOR_ID=2.4
-      - DISTRIBUIDOR_HOST=distribuidor-2
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9204:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-2
-    restart: unless-stopped
-
-  surtidor-3-1:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-3-1
-    environment:
-      - SURTIDOR_ID=3.1
-      - DISTRIBUIDOR_HOST=distribuidor-3
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9301:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-3
-    restart: unless-stopped
-
-  surtidor-3-2:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-3-2
-    environment:
-      - SURTIDOR_ID=3.2
-      - DISTRIBUIDOR_HOST=distribuidor-3
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9302:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-3
-    restart: unless-stopped
-
-  surtidor-3-3:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-3-3
-    environment:
-      - SURTIDOR_ID=3.3
-      - DISTRIBUIDOR_HOST=distribuidor-3
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9303:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-3
-    restart: unless-stopped
-
-  surtidor-3-4:
-    build:
-      context: .
-      dockerfile: surtidor/Dockerfile
-    container_name: surtidor-3-4
-    environment:
-      - SURTIDOR_ID=3.4
-      - DISTRIBUIDOR_HOST=distribuidor-3
-      - DISTRIBUIDOR_PORT=6000
-      - WEB_PORT=9000
-    ports:
-      - "9304:9000"
-    networks:
-      - fuel-network
-    depends_on:
-      - distribuidor-3
-    restart: unless-stopped
-
 networks:
   fuel-network:
     driver: bridge
 
 volumes:
+  casa-matriz-data:
   dist1-data:
   dist2-data:
   dist3-data:
