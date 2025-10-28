@@ -4,282 +4,626 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Casa Matriz - Sistema de Combustibles</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root {
-            --bg-primary: #0a0e1a;
-            --bg-secondary: #151b2d;
-            --bg-tertiary: #1f2937;
-            --bg-card: #1e293b;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-orange: #f59e0b;
-            --accent-red: #ef4444;
-            --border-color: #334155;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-elevated: #1a1a1a;
+            --border-primary: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(99, 102, 241, 0.3);
+            --text-primary: #fafafa;
+            --text-secondary: #a3a3a3;
+            --text-tertiary: #525252;
+            --accent-primary: #6366f1;
+            --accent-hover: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glass-bg: rgba(26, 26, 26, 0.5);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+        }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
             min-height: 100vh;
         }
         
-        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
-        
-        header {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 32px;
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2rem;
         }
         
-        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
-        .subtitle { color: var(--text-secondary); font-size: 1rem; margin-bottom: 24px; }
+        /* Header */
+        .header {
+            margin-bottom: 3rem;
+        }
         
-        .nav-links { display: flex; gap: 12px; flex-wrap: wrap; }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .header-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+        
+        .header-text h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.025em;
+        }
+        
+        .header-text p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
         .nav-link {
-            padding: 10px 20px;
-            background: var(--bg-tertiary);
+            padding: 0.5rem 1rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
             color: var(--text-secondary);
             text-decoration: none;
-            border-radius: 8px;
             font-size: 0.875rem;
             font-weight: 500;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
         .nav-link:hover {
-            background: var(--accent-blue);
-            color: white;
-            border-color: var(--accent-blue);
+            border-color: var(--border-glow);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .nav-link:hover::before {
+            opacity: 0.1;
+        }
+        
+        /* Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card:hover {
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow);
             transform: translateY(-2px);
         }
         
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 24px; }
-        
-        .card {
-            background: var(--bg-card);
-            padding: 28px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
         }
         
-        .card h2 {
-            color: var(--text-primary);
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--accent-blue);
-            font-size: 1.25rem;
+        .card-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-primary);
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
             font-weight: 600;
+            letter-spacing: -0.025em;
         }
         
+        /* Precio Items */
         .precio-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding: 14px 16px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            border-left: 3px solid var(--accent-blue);
+            padding: 0.875rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
         }
         
-        .precio-label { 
+        .precio-item:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .precio-label {
+            font-size: 0.875rem;
             font-weight: 500;
-            color: var(--text-primary);
-            font-size: 0.9375rem;
+            color: var(--text-secondary);
         }
         
         .precio-input {
-            width: 150px;
-            padding: 10px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.9375rem;
+            width: 140px;
+            padding: 0.5rem 0.75rem;
             background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
             color: var(--text-primary);
-            transition: border-color 0.3s;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-align: right;
+            transition: all 0.2s;
         }
+        
         .precio-input:focus {
             outline: none;
-            border-color: var(--accent-blue);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
         
+        /* Buttons */
         .btn {
-            background: var(--accent-blue);
-            color: white;
-            padding: 12px 28px;
+            padding: 0.625rem 1.25rem;
             border: none;
             border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 0.9375rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            margin-top: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .btn:hover {
-            background: #2563eb;
+        
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .btn-primary {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: none;
+        }
+        
+        .btn-primary:hover {
+            background: rgba(59, 130, 246, 0.25);
+            border-color: rgba(59, 130, 246, 0.5);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: none;
         }
         
-        .btn-success { background: var(--accent-green); }
+        .btn-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
         .btn-success:hover {
-            background: #059669;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.25);
+            border-color: rgba(16, 185, 129, 0.5);
         }
         
-        .btn-danger { background: var(--accent-red); }
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
         .btn-danger:hover {
-            background: #dc2626;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.5);
         }
         
-        .btn-warning { background: var(--accent-orange); }
+        .btn-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
         .btn-warning:hover {
-            background: #d97706;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.25);
+            border-color: rgba(245, 158, 11, 0.5);
         }
         
-        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
         
-        .distribuidores-list { margin-top: 16px; }
+        /* Distribuidores */
         .distribuidor-item {
-            padding: 16px;
-            margin-bottom: 12px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            border-left: 3px solid var(--accent-green);
-            transition: transform 0.2s;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
         }
-        .distribuidor-item:hover { transform: translateX(4px); }
-        .distribuidor-item.inactivo { border-left-color: var(--accent-red); opacity: 0.6; }
         
-        .dist-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .dist-id { font-weight: 600; color: var(--text-primary); font-size: 1rem; }
+        .distribuidor-item:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(2px);
+        }
+        
+        .dist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dist-id {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .dist-id svg {
+            width: 18px;
+            height: 18px;
+            color: var(--accent-primary);
+        }
+        
         .dist-status {
-            padding: 6px 12px;
+            padding: 0.25rem 0.75rem;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-        }
-        .dist-status.activo { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
-        .dist-status.inactivo { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
-        
-        .dist-info { font-size: 0.875rem; color: var(--text-muted); }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
-        .stat-card {
-            padding: 20px;
-            border-radius: 8px;
-            background: var(--bg-tertiary);
-            text-align: center;
-            border-left: 3px solid var(--accent-blue);
-        }
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--text-primary);
-        }
-        .stat-label {
-            font-size: 0.8125rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
         }
         
-        .mensaje {
-            padding: 14px 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-            display: none;
-            font-size: 0.875rem;
+        .dist-status svg {
+            width: 12px;
+            height: 12px;
         }
-        .mensaje.success {
+        
+        .dist-status.activo {
             background: rgba(16, 185, 129, 0.15);
-            color: #6ee7b7;
+            color: var(--success);
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
-        .mensaje.error {
+        
+        .dist-status.inactivo {
             background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
+            color: var(--danger);
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
         
+        .dist-info {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            padding: 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .stat-card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        
+        /* Fuel Cards */
         .fuel-stats {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            margin-top: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
         }
-        .fuel-card {
-            padding: 16px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            text-align: center;
-        }
-        .fuel-card.g93 { border-left: 3px solid #3b82f6; }
-        .fuel-card.g95 { border-left: 3px solid #8b5cf6; }
-        .fuel-card.g97 { border-left: 3px solid #ec4899; }
-        .fuel-card.diesel { border-left: 3px solid #f59e0b; }
-        .fuel-card.kerosene { border-left: 3px solid #10b981; }
         
-        .fuel-type { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
-        .fuel-amount { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
-        .fuel-unit { font-size: 0.875rem; color: var(--text-secondary); margin-top: 4px; }
+        .fuel-card {
+            padding: 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .fuel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--fuel-color);
+        }
+        
+        .fuel-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--fuel-color);
+        }
+        
+        .fuel-card.g93::before { background: #3b82f6; }
+        .fuel-card.g95::before { background: #8b5cf6; }
+        .fuel-card.g97::before { background: #ec4899; }
+        .fuel-card.diesel::before { background: #f59e0b; }
+        .fuel-card.kerosene::before { background: #10b981; }
+        
+        .fuel-type {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .fuel-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .fuel-unit {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Messages */
+        .mensaje {
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid;
+        }
+        
+        .mensaje.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .mensaje.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Full Width Card */
+        .card-full {
+            grid-column: 1 / -1;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-box p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .loading {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .fuel-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header-top {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Casa Matriz</h1>
-            <p class="subtitle">Sistema Central de Gestión de Combustibles</p>
-            <div class="nav-links">
-                <a href="http://localhost:8001" class="nav-link">Distribuidor 1</a>
-                <a href="http://localhost:8002" class="nav-link">Distribuidor 2</a>
-                <a href="http://localhost:8003" class="nav-link">Distribuidor 3</a>
+        <header class="header">
+            <div class="header-top">
+                <div class="header-title">
+                    <div class="header-icon">
+                        <i data-lucide="building-2"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Casa Matriz</h1>
+                        <p>Sistema Central de Gestión de Combustibles</p>
+                    </div>
+                </div>
+                <div class="nav-links">
+                    <a href="http://localhost:8001" class="nav-link">Distribuidor 1</a>
+                    <a href="http://localhost:8002" class="nav-link">Distribuidor 2</a>
+                    <a href="http://localhost:8003" class="nav-link">Distribuidor 3</a>
+                </div>
             </div>
         </header>
         
         <div class="grid">
             <div class="card">
-                <h2>Gestión de Precios</h2>
+                <div class="card-header">
+                    <span class="card-icon">
+                        <i data-lucide="dollar-sign"></i>
+                    </span>
+                    <h2 class="card-title">Gestión de Precios</h2>
+                </div>
                 <div id="precios-form"></div>
-                <button class="btn" onclick="actualizarPrecios()">Actualizar Precios</button>
+                <button class="btn btn-primary" onclick="actualizarPrecios()">
+                    <i data-lucide="check"></i>
+                    <span>Actualizar Precios</span>
+                </button>
                 <div id="mensaje-precios" class="mensaje"></div>
             </div>
             
             <div class="card">
-                <h2>Distribuidores Conectados</h2>
-                <div id="distribuidores-list" class="distribuidores-list"></div>
+                <div class="card-header">
+                    <span class="card-icon">
+                        <i data-lucide="store"></i>
+                    </span>
+                    <h2 class="card-title">Distribuidores Conectados</h2>
+                </div>
+                <div id="distribuidores-list"></div>
             </div>
         </div>
         
-        <div class="card">
-            <h2>Control de Simulación</h2>
-            <div class="btn-group">
-                <button class="btn btn-success" onclick="iniciarSimulacion()">Iniciar Simulación</button>
-                <button class="btn btn-danger" onclick="detenerSimulacion()">Detener Simulación</button>
-                <button class="btn btn-warning" onclick="reiniciarSimulacion()">Reiniciar Simulación</button>
+        <div class="grid">
+            <div class="card card-full">
+                <div class="card-header">
+                    <span class="card-icon">
+                        <i data-lucide="zap"></i>
+                    </span>
+                    <h2 class="card-title">Control de Simulación</h2>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="iniciarSimulacion()">
+                        <i data-lucide="play"></i>
+                        <span>Iniciar Simulación</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="detenerSimulacion()">
+                        <i data-lucide="pause"></i>
+                        <span>Detener Simulación</span>
+                    </button>
+                    <button class="btn btn-warning" onclick="reiniciarSimulacion()">
+                        <i data-lucide="refresh-cw"></i>
+                        <span>Reiniciar Simulación</span>
+                    </button>
+                </div>
+                <div id="mensaje-simulacion" class="mensaje"></div>
+                <div id="simulacion-status" style="margin-top: 1.5rem;"></div>
             </div>
-            <div id="mensaje-simulacion" class="mensaje"></div>
-            <div id="simulacion-status" style="margin-top: 20px;"></div>
         </div>
         
         <div class="grid">
             <div class="card">
-                <h2>Estadísticas en Tiempo Real</h2>
+                <div class="card-header">
+                    <span class="card-icon">
+                        <i data-lucide="bar-chart-3"></i>
+                    </span>
+                    <h2 class="card-title">Estadísticas en Tiempo Real</h2>
+                </div>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value" id="total-transacciones">0</div>
@@ -297,22 +641,38 @@
             </div>
             
             <div class="card">
-                <h2>Gestión de Datos</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9375rem;">
-                    Eliminar todos los datos del sistema (transacciones, precios históricos, etc.)
-                </p>
-                <button class="btn btn-danger" onclick="confirmarBorrarDatos()">Borrar Todos los Datos</button>
+                <div class="card-header">
+                    <span class="card-icon">
+                        <i data-lucide="trash-2"></i>
+                    </span>
+                    <h2 class="card-title">Gestión de Datos</h2>
+                </div>
+                <div class="info-box">
+                    <p>Eliminar todos los datos del sistema (transacciones, precios históricos, etc.). Esta acción no se puede deshacer.</p>
+                </div>
+                <button class="btn btn-danger" onclick="confirmarBorrarDatos()">
+                    <i data-lucide="alert-triangle"></i>
+                    <span>Borrar Todos los Datos</span>
+                </button>
                 <div id="mensaje-borrar" class="mensaje"></div>
             </div>
         </div>
         
-        <div class="card">
-            <h2>Resumen por Combustible</h2>
+        <div class="card card-full">
+            <div class="card-header">
+                <span class="card-icon">
+                    <i data-lucide="fuel"></i>
+                </span>
+                <h2 class="card-title">Resumen por Combustible</h2>
+            </div>
             <div id="fuel-summary"></div>
         </div>
     </div>
     
     <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
         let preciosActuales = {};
         const TIPOS_COMBUSTIBLE = ['93', '95', '97', 'diesel', 'kerosene'];
         
@@ -329,19 +689,21 @@
         
         function renderPrecios() {
             const form = document.getElementById('precios-form');
-            form.innerHTML = TIPOS_COMBUSTIBLE.map(tipo => {
-                const label = tipo === '93' ? 'Gasolina 93' :
-                             tipo === '95' ? 'Gasolina 95' :
-                             tipo === '97' ? 'Gasolina 97' :
-                             tipo === 'diesel' ? 'Diesel' : 'Kerosene';
-                return `
-                    <div class="precio-item">
-                        <span class="precio-label">${label}</span>
-                        <input type="number" id="precio-${tipo}" class="precio-input"
-                               value="${preciosActuales[tipo] || 0}" step="0.01" min="0">
-                    </div>
-                `;
-            }).join('');
+            const labels = {
+                '93': 'Gasolina 93',
+                '95': 'Gasolina 95',
+                '97': 'Gasolina 97',
+                'diesel': 'Diesel',
+                'kerosene': 'Kerosene'
+            };
+            
+            form.innerHTML = TIPOS_COMBUSTIBLE.map(tipo => `
+                <div class="precio-item">
+                    <span class="precio-label">${labels[tipo]}</span>
+                    <input type="number" id="precio-${tipo}" class="precio-input"
+                           value="${preciosActuales[tipo] || 0}" step="1" min="0">
+                </div>
+            `).join('');
         }
         
         async function actualizarPrecios() {
@@ -371,17 +733,31 @@
                 const data = await response.json();
                 const list = document.getElementById('distribuidores-list');
                 const distributors = Array.isArray(data) ? data : [];
+                
+                if (distributors.length === 0) {
+                    list.innerHTML = '<p style="color: var(--text-tertiary); text-align: center; padding: 2rem;">No hay distribuidores conectados</p>';
+                    return;
+                }
+                
                 list.innerHTML = distributors.map(d => `
-                    <div class="distribuidor-item ${d.activo ? '' : 'inactivo'}">
+                    <div class="distribuidor-item">
                         <div class="dist-header">
-                            <span class="dist-id">Distribuidor ${d.id}</span>
+                            <span class="dist-id">
+                                <i data-lucide="store"></i>
+                                Distribuidor ${d.id}
+                            </span>
                             <span class="dist-status ${d.activo ? 'activo' : 'inactivo'}">
+                                <i data-lucide="${d.activo ? 'circle' : 'circle-off'}"></i>
                                 ${d.activo ? 'Activo' : 'Inactivo'}
                             </span>
                         </div>
-                        <div class="dist-info">Surtidores: ${d.surtidores || 4} | Transacciones: ${d.total_transacciones || 0}</div>
+                        <div class="dist-info">
+                            ${d.surtidores || 4} surtidores • ${d.total_transacciones || 0} transacciones
+                        </div>
                     </div>
                 `).join('');
+                
+                lucide.createIcons();
             } catch (error) {
                 console.error('Error al cargar distribuidores:', error);
             }
@@ -396,10 +772,10 @@
                 document.getElementById('total-transacciones').textContent = trans.length;
                 
                 const totalLitros = trans.reduce((sum, t) => sum + (t.litros || 0), 0);
-                document.getElementById('total-litros').textContent = totalLitros.toFixed(2);
+                document.getElementById('total-litros').textContent = totalLitros.toFixed(1);
                 
                 const totalIngresos = trans.reduce((sum, t) => sum + (t.total || 0), 0);
-                document.getElementById('total-ingresos').textContent = `$${totalIngresos.toFixed(0)}`;
+                document.getElementById('total-ingresos').textContent = `$${totalIngresos.toLocaleString('es-CL')}`;
                 
                 // Resumen por combustible
                 const porCombustible = {};
@@ -415,19 +791,23 @@
                     }
                 });
                 
+                const labels = {
+                    '93': 'Gasolina 93',
+                    '95': 'Gasolina 95',
+                    '97': 'Gasolina 97',
+                    'diesel': 'Diesel',
+                    'kerosene': 'Kerosene'
+                };
+                
                 const summary = document.getElementById('fuel-summary');
-                summary.innerHTML = '<div class="fuel-stats">' + TIPOS_COMBUSTIBLE.map((tipo, idx) => {
+                summary.innerHTML = '<div class="fuel-stats">' + TIPOS_COMBUSTIBLE.map(tipo => {
                     const stats = porCombustible[tipo];
                     const className = tipo.startsWith('9') ? 'g' + tipo : tipo;
-                    const label = tipo === '93' ? 'Gasolina 93' :
-                                 tipo === '95' ? 'Gasolina 95' :
-                                 tipo === '97' ? 'Gasolina 97' :
-                                 tipo === 'diesel' ? 'Diesel' : 'Kerosene';
                     return `
                         <div class="fuel-card ${className}">
-                            <div class="fuel-type">${label}</div>
+                            <div class="fuel-type">${labels[tipo]}</div>
                             <div class="fuel-amount">${stats.cantidad}</div>
-                            <div class="fuel-unit">${stats.litros.toFixed(1)}L - $${stats.monto.toFixed(0)}</div>
+                            <div class="fuel-unit">${stats.litros.toFixed(1)}L • $${stats.monto.toLocaleString('es-CL')}</div>
                         </div>
                     `;
                 }).join('') + '</div>';
@@ -440,7 +820,7 @@
             try {
                 const response = await fetch('/api/simulacion/global/iniciar', { method: 'POST' });
                 const result = await response.json();
-                mostrarMensaje('mensaje-simulacion', result.mensaje || 'Simulación iniciada', 'success');
+                mostrarMensaje('mensaje-simulacion', 'Simulación iniciada en todos los distribuidores', 'success');
                 await actualizarEstadoSimulacion();
             } catch (error) {
                 mostrarMensaje('mensaje-simulacion', 'Error al iniciar simulación', 'error');
@@ -451,7 +831,7 @@
             try {
                 const response = await fetch('/api/simulacion/global/detener', { method: 'POST' });
                 const result = await response.json();
-                mostrarMensaje('mensaje-simulacion', result.mensaje || 'Simulación detenida', 'success');
+                mostrarMensaje('mensaje-simulacion', 'Simulación detenida en todos los distribuidores', 'success');
                 await actualizarEstadoSimulacion();
             } catch (error) {
                 mostrarMensaje('mensaje-simulacion', 'Error al detener simulación', 'error');
@@ -470,16 +850,33 @@
                 const response = await fetch('/api/simulacion/global/estado');
                 const data = await response.json();
                 const statusDiv = document.getElementById('simulacion-status');
-                const estados = data.estados || [];
-                statusDiv.innerHTML = '<div style="display: flex; gap: 12px; flex-wrap: wrap;">' +
-                    estados.map(e => `
-                        <div style="flex: 1; min-width: 150px; padding: 12px; background: var(--bg-tertiary); border-radius: 8px; text-align: center;">
-                            <div style="font-size: 0.875rem; color: var(--text-secondary);">${e.nombre}</div>
-                            <div style="font-weight: 600; color: ${e.activa ? 'var(--accent-green)' : 'var(--text-muted)'}; margin-top: 4px;">
-                                ${e.activa ? 'Activa' : 'Detenida'}
+                const estados = data.estados || {};
+                
+                const estadosArray = Object.entries(estados).map(([key, activa]) => ({
+                    nombre: key.replace('distribuidor_', 'Distribuidor '),
+                    activa: activa
+                }));
+                
+                if (estadosArray.length === 0) {
+                    statusDiv.innerHTML = '';
+                    return;
+                }
+                
+                statusDiv.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem;">
+                        ${estadosArray.map(e => `
+                            <div style="padding: 0.875rem; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: 8px; text-align: center;">
+                                <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${e.nombre}</div>
+                                <div style="font-weight: 600; color: ${e.activa ? 'var(--success)' : 'var(--text-tertiary)'}; display: flex; align-items: center; justify-content: center; gap: 0.375rem;">
+                                    <i data-lucide="${e.activa ? 'play-circle' : 'pause-circle'}" style="width: 16px; height: 16px;"></i>
+                                    ${e.activa ? 'Activa' : 'Detenida'}
+                                </div>
                             </div>
-                        </div>
-                    `).join('') + '</div>';
+                        `).join('')}
+                    </div>
+                `;
+                
+                lucide.createIcons();
             } catch (error) {
                 console.error('Error al obtener estado:', error);
             }
@@ -490,7 +887,7 @@
                 try {
                     const response = await fetch('/api/borrar-todos-datos', { method: 'POST' });
                     const result = await response.json();
-                    mostrarMensaje('mensaje-borrar', 'Todos los datos han sido eliminados', 'success');
+                    mostrarMensaje('mensaje-borrar', 'Todos los datos han sido eliminados correctamente', 'success');
                     await cargarDatos();
                 } catch (error) {
                     mostrarMensaje('mensaje-borrar', 'Error al borrar datos', 'error');
@@ -505,7 +902,7 @@
             elem.style.display = 'block';
             setTimeout(() => {
                 elem.style.display = 'none';
-            }, 3000);
+            }, 4000);
         }
         
         async function cargarDatos() {

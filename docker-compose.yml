@@ -7,8 +7,8 @@ services:
       dockerfile: casa_matriz/Dockerfile
     container_name: casa-matriz
     ports:
-      - "5000:5000"  # Web
-      - "5001:5001"  # TCP
+      - "5000:5000"  
+      - "5001:5001"  
     volumes:
       - casa-matriz-data:/data
     networks:
@@ -27,8 +27,8 @@ services:
       - TCP_PORT_LOCAL=6000
       - WEB_PORT=8000
     ports:
-      - "8001:8000"  # Web (incluye 4 surtidores integrados)
-      - "6001:6000"  # TCP
+      - "8001:8000"  
+      - "6001:6000"  
     volumes:
       - dist1-data:/data
     networks:
@@ -49,8 +49,8 @@ services:
       - TCP_PORT_LOCAL=6000
       - WEB_PORT=8000
     ports:
-      - "8002:8000"  # Web (incluye 4 surtidores integrados)
-      - "6002:6000"  # TCP
+      - "8002:8000"  
+      - "6002:6000"  
     volumes:
       - dist2-data:/data
     networks:
@@ -71,8 +71,8 @@ services:
       - TCP_PORT_LOCAL=6000
       - WEB_PORT=8000
     ports:
-      - "8003:8000"  # Web (incluye 4 surtidores integrados)
-      - "6003:6000"  # TCP
+      - "8003:8000"  
+      - "6003:6000"  
     volumes:
       - dist3-data:/data
     networks:

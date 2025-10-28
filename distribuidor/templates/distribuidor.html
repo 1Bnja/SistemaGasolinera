@@ -4,262 +4,645 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Distribuidor {{ distribuidor_id }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         :root {
-            --bg-primary: #0a0e1a;
-            --bg-card: #1e293b;
-            --bg-tertiary: #1f2937;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-orange: #f59e0b;
-            --border-color: #334155;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-elevated: #1a1a1a;
+            --border-primary: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(99, 102, 241, 0.3);
+            --text-primary: #fafafa;
+            --text-secondary: #a3a3a3;
+            --text-tertiary: #525252;
+            --accent-primary: #6366f1;
+            --accent-hover: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg-primary);
-            min-height: 100vh;
             color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
         }
-        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
-        header {
-            background: var(--bg-card);
-            padding: 32px;
-            margin-bottom: 24px;
+        
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Header */
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
             border-radius: 12px;
-            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
         }
-        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
-        .subtitle { color: var(--text-secondary); font-size: 1rem; margin-bottom: 24px; }
-        .nav-links { display: flex; gap: 12px; flex-wrap: wrap; }
+        
+        .header-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+        
+        .header-text h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.025em;
+        }
+        
+        .header-text p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
         .nav-link {
-            padding: 10px 20px;
-            background: var(--bg-tertiary);
+            padding: 0.5rem 1rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
             color: var(--text-secondary);
             text-decoration: none;
-            border-radius: 8px;
             font-size: 0.875rem;
             font-weight: 500;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
         }
+        
+        .nav-link svg {
+            width: 14px;
+            height: 14px;
+        }
+        
         .nav-link:hover {
-            background: var(--accent-blue);
-            color: white;
-            border-color: var(--accent-blue);
-            transform: translateY(-2px);
-        }
-        .status-banner {
-            padding: 14px 24px;
-            margin-bottom: 24px;
-            border-radius: 8px;
-            font-weight: 500;
-            text-align: center;
-            font-size: 0.9375rem;
-        }
-        .status-banner.autonomo {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-        .status-banner.conectado {
-            background: rgba(16, 185, 129, 0.15);
-            color: #6ee7b7;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
-        .card {
-            background: var(--bg-card);
-            padding: 28px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-        .card h2 {
+            border-color: var(--border-glow);
             color: var(--text-primary);
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--accent-blue);
-            font-size: 1.25rem;
-            font-weight: 600;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-glow);
         }
-        .surtidores-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        
+        /* Status Banner */
+        .status-banner {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.875rem;
+            border: 1px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .status-banner svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .status-banner.autonomo {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-banner.conectado {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card:hover {
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        .card-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-primary);
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+        
+        .card-full {
+            grid-column: 1 / -1;
+        }
+        
+        /* Surtidores Grid */
+        .surtidores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
         .surtidor-card {
-            padding: 16px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            border-left: 3px solid var(--accent-blue);
+            padding: 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .surtidor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
+        }
+        
+        .surtidor-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .surtidor-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s;
-            cursor: pointer;
         }
-        .surtidor-card:hover {
-            background: #2d3748;
-            transform: translateX(4px);
+        
+        .surtidor-id {
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .surtidor-id { font-weight: 600; color: var(--text-primary); font-size: 1rem; }
+        
+        .surtidor-id svg {
+            width: 18px;
+            height: 18px;
+            color: var(--accent-primary);
+        }
+        
         .surtidor-status {
-            padding: 6px 12px;
+            padding: 0.375rem 0.75rem;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            border: 1px solid;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
         }
+        
+        .surtidor-status svg {
+            width: 12px;
+            height: 12px;
+        }
+        
         .surtidor-status.libre {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.3);
         }
-        .surtidor-status.operacion {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--accent-orange);
+        
+        .surtidor-status.operacion,
+        .surtidor-status.en_operacion {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border-color: rgba(245, 158, 11, 0.3);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-        thead { background: var(--bg-tertiary); }
-        th, td {
-            padding: 12px 14px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.875rem;
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
         }
-        th {
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
+        
+        /* Info Sistema */
+        .info-grid {
+            display: grid;
+            gap: 1rem;
         }
-        tbody tr { transition: background 0.2s; }
-        tbody tr:hover { background: var(--bg-tertiary); }
+        
         .info-box {
-            padding: 18px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            margin-bottom: 14px;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
         }
+        
         .info-label {
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-            font-size: 0.8125rem;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
+        
         .info-value {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--text-primary);
+            margin-bottom: 0.25rem;
         }
+        
+        .price-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
         .price-item {
             display: flex;
             justify-content: space-between;
-            font-size: 0.9375rem;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 0.625rem;
+            background: var(--bg-primary);
+            border-radius: 6px;
+            font-size: 0.875rem;
         }
-        .price-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .price-label { color: var(--text-secondary); }
-        .price-value { font-weight: 600; color: var(--accent-green); }
+        
+        .price-label {
+            color: var(--text-secondary);
+        }
+        
+        .price-value {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        th {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid var(--border-primary);
+            transition: background 0.2s;
+        }
+        
+        tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+        
+        td {
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-tertiary);
+        }
+        
+        .empty-state-icon {
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state-icon svg {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .surtidores-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Distribuidor {{ distribuidor_id }}</h1>
-            <p class="subtitle">Gestión Local de Surtidores</p>
-            <div class="nav-links">
-                <a href="http://localhost:5000" class="nav-link">Casa Matriz</a>
-                <a href="/surtidor/1" class="nav-link">Surtidor {{ distribuidor_id }}.1</a>
-                <a href="/surtidor/2" class="nav-link">Surtidor {{ distribuidor_id }}.2</a>
-                <a href="/surtidor/3" class="nav-link">Surtidor {{ distribuidor_id }}.3</a>
-                <a href="/surtidor/4" class="nav-link">Surtidor {{ distribuidor_id }}.4</a>
+        <header class="header">
+            <div class="header-top">
+                <div class="header-title">
+                    <div class="header-icon">
+                        <i data-lucide="store"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Distribuidor {{ distribuidor_id }}</h1>
+                        <p>Gestión Local de Surtidores</p>
+                    </div>
+                </div>
+                <div class="nav-links">
+                    <a href="http://localhost:5000" class="nav-link">
+                        <i data-lucide="building-2"></i>
+                        Casa Matriz
+                    </a>
+                    <a href="/surtidor/1" class="nav-link">Surtidor {{ distribuidor_id }}.1</a>
+                    <a href="/surtidor/2" class="nav-link">Surtidor {{ distribuidor_id }}.2</a>
+                    <a href="/surtidor/3" class="nav-link">Surtidor {{ distribuidor_id }}.3</a>
+                    <a href="/surtidor/4" class="nav-link">Surtidor {{ distribuidor_id }}.4</a>
+                </div>
             </div>
         </header>
+        
         <div id="status-banner" class="status-banner"></div>
+        
         <div class="grid">
             <div class="card">
-                <h2>Surtidores</h2>
+                <div class="card-header">
+                    <span class="card-icon">
+                        <i data-lucide="fuel"></i>
+                    </span>
+                    <h2 class="card-title">Surtidores</h2>
+                </div>
                 <div id="surtidores-grid" class="surtidores-grid"></div>
             </div>
+            
             <div class="card">
-                <h2>Información del Sistema</h2>
-                <div id="info-sistema"></div>
+                <div class="card-header">
+                    <span class="card-icon">
+                        <i data-lucide="info"></i>
+                    </span>
+                    <h2 class="card-title">Información del Sistema</h2>
+                </div>
+                <div id="info-sistema" class="info-grid"></div>
             </div>
         </div>
-        <div class="card">
-            <h2>Últimas Transacciones</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Surtidor</th>
-                        <th>Combustible</th>
-                        <th>Litros</th>
-                        <th>Total</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody id="transacciones-tbody"></tbody>
-            </table>
+        
+        <div class="card card-full">
+            <div class="card-header">
+                <span class="card-icon">
+                    <i data-lucide="list"></i>
+                </span>
+                <h2 class="card-title">Últimas Transacciones</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Surtidor</th>
+                            <th>Combustible</th>
+                            <th>Litros</th>
+                            <th>Total</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transacciones-tbody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
+    
     <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
         const distribuidorId = '{{ distribuidor_id }}';
+        
         async function cargarEstado() {
             try {
                 const response = await fetch('/api/estado');
                 const data = await response.json();
+                
+                // Status banner
                 const banner = document.getElementById('status-banner');
                 if (data.modo_autonomo) {
                     banner.className = 'status-banner autonomo';
-                    banner.textContent = 'Modo Autónomo - Sin conexión con Casa Matriz';
+                    banner.innerHTML = '<i data-lucide="alert-triangle"></i> Modo Autónomo - Sin conexión con Casa Matriz';
                 } else {
                     banner.className = 'status-banner conectado';
-                    banner.textContent = 'Conectado a Casa Matriz';
+                    banner.innerHTML = '<i data-lucide="wifi"></i> Conectado a Casa Matriz';
                 }
+                lucide.createIcons();
+                
+                // Surtidores
                 const surtidoresHtml = data.surtidores.map(s => {
                     const surtidorNum = s.id.split('.')[1];
-                    return `<a href="/surtidor/${surtidorNum}" style="text-decoration: none; color: inherit;">
-                        <div class="surtidor-card">
-                            <span class="surtidor-id">Surtidor ${s.id}</span>
-                            <span class="surtidor-status ${s.estado.toLowerCase() === 'libre' ? 'libre' : 'operacion'}">
-                                ${s.estado}
-                            </span>
-                        </div></a>`;
+                    const estado = s.estado.toLowerCase().replace('_', '-');
+                    const iconEstado = s.estado === 'LIBRE' ? 'check-circle' : 'loader';
+                    return `
+                        <a href="/surtidor/${surtidorNum}" class="surtidor-card">
+                            <div class="surtidor-header">
+                                <span class="surtidor-id">
+                                    <i data-lucide="fuel"></i>
+                                    Surtidor ${s.id}
+                                </span>
+                                <span class="surtidor-status ${estado}">
+                                    <i data-lucide="${iconEstado}"></i>
+                                    ${s.estado === 'LIBRE' ? 'Libre' : 'En operación'}
+                                </span>
+                            </div>
+                        </a>
+                    `;
                 }).join('');
                 document.getElementById('surtidores-grid').innerHTML = surtidoresHtml;
-                const preciosLabels = {'93':'Gasolina 93','95':'Gasolina 95','97':'Gasolina 97','diesel':'Diesel','kerosene':'Kerosene'};
-                const infoHtml = `<div class="info-box"><div class="info-label">Total Transacciones</div>
-                    <div class="info-value">${data.total_transacciones}</div></div>
-                    <div class="info-box"><div class="info-label">Precios Actuales</div>
-                    ${Object.entries(data.precios).map(([tipo,precio]) =>
-                        `<div class="price-item"><span class="price-label">${preciosLabels[tipo]||tipo.toUpperCase()}</span>
-                        <span class="price-value">$${precio}</span></div>`).join('')}</div>`;
+                lucide.createIcons();
+                
+                // Info del sistema
+                const preciosLabels = {
+                    '93': 'Gasolina 93',
+                    '95': 'Gasolina 95',
+                    '97': 'Gasolina 97',
+                    'diesel': 'Diesel',
+                    'kerosene': 'Kerosene'
+                };
+                
+                const infoHtml = `
+                    <div class="info-box">
+                        <div class="info-label">Total Transacciones</div>
+                        <div class="info-value">${data.total_transacciones}</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Precios Actuales</div>
+                        <div class="price-list">
+                            ${Object.entries(data.precios).map(([tipo, precio]) => `
+                                <div class="price-item">
+                                    <span class="price-label">${preciosLabels[tipo] || tipo.toUpperCase()}</span>
+                                    <span class="price-value">$${precio}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
                 document.getElementById('info-sistema').innerHTML = infoHtml;
-            } catch (error) { console.error('Error:', error); }
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
+        
         async function cargarTransacciones() {
             try {
                 const response = await fetch('/api/transacciones?limit=10');
                 const transacciones = await response.json();
-                const labels = {'93':'Gasolina 93','95':'Gasolina 95','97':'Gasolina 97','diesel':'Diesel','kerosene':'Kerosene'};
-                const html = transacciones.map(t => `<tr><td>${t.surtidor_id}</td>
-                    <td>${labels[t.tipo_combustible]||t.tipo_combustible.toUpperCase()}</td>
-                    <td>${t.litros.toFixed(2)}L</td><td>$${t.total.toFixed(0)}</td>
-                    <td>${new Date(t.timestamp).toLocaleString('es-CL')}</td></tr>`).join('');
-                document.getElementById('transacciones-tbody').innerHTML = html ||
-                    '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No hay transacciones</td></tr>';
-            } catch (error) { console.error('Error:', error); }
+                
+                const labels = {
+                    '93': 'Gasolina 93',
+                    '95': 'Gasolina 95',
+                    '97': 'Gasolina 97',
+                    'diesel': 'Diesel',
+                    'kerosene': 'Kerosene'
+                };
+                
+                const tbody = document.getElementById('transacciones-tbody');
+                
+                if (transacciones.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i data-lucide="inbox"></i>
+                                    </div>
+                                    <p>No hay transacciones registradas</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    lucide.createIcons();
+                    return;
+                }
+                
+                tbody.innerHTML = transacciones.map(t => `
+                    <tr>
+                        <td><strong>${t.surtidor_id}</strong></td>
+                        <td>${labels[t.tipo_combustible] || t.tipo_combustible.toUpperCase()}</td>
+                        <td>${t.litros.toFixed(2)}L</td>
+                        <td style="color: var(--success); font-weight: 600;">$${t.total.toLocaleString('es-CL')}</td>
+                        <td>${new Date(t.timestamp).toLocaleString('es-CL', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
-        cargarEstado(); cargarTransacciones();
-        setInterval(() => { cargarEstado(); cargarTransacciones(); }, 2000);
+        
+        async function cargarDatos() {
+            await cargarEstado();
+            await cargarTransacciones();
+        }
+        
+        cargarDatos();
+        setInterval(cargarDatos, 2000);
     </script>
 </body>
 </html>
