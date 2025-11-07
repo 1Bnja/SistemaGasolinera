@@ -256,12 +256,12 @@ def borrar_todos_datos_local():
 def actualizar_precios_locales(precios_corporativos):
     global precios_actuales
     factor_utilidad = 1.05
-    
+
     for combustible, precio in precios_corporativos.items():
         if combustible in COMBUSTIBLES:
             precio_local = int(precio * factor_utilidad)
             precios_actuales[combustible] = precio_local
-            
+
             with lock_db:
                 conn = sqlite3.connect(DB_PATH)
                 cursor = conn.cursor()
@@ -271,8 +271,12 @@ def actualizar_precios_locales(precios_corporativos):
                 )
                 conn.commit()
                 conn.close()
-    
+
     propagar_precios_surtidores()
+
+    # Emitir evento WebSocket para actualizar el frontend del distribuidor en tiempo real
+    socketio.emit('precios_actualizados', precios_actuales)
+
     print(f"Precios actualizados: {precios_actuales}")
 
 

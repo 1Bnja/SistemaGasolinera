@@ -25,6 +25,12 @@ socket.on('nueva_transaccion', (data) => {
     cargarEstado(); // Actualizar total de transacciones
 });
 
+// Escuchar cambios de precios en tiempo real
+socket.on('precios_actualizados', (data) => {
+    console.log('Precios actualizados en tiempo real:', data);
+    cargarEstado(); // Recargar para mostrar nuevos precios
+});
+
 // Obtener variables del window (pasadas desde el template HTML)
 const distribuidorId = window.DISTRIBUIDOR_ID || '1';
 

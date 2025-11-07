@@ -18,11 +18,17 @@ socket.on('nueva_transaccion_matriz', (data) => {
     cargarEstadisticas(); // Actualizar estadísticas
 });
 
+// Flag para evitar actualización del formulario durante edición
+let actualizandoPrecios = false;
+
 // Escuchar cambios de precios en tiempo real
 socket.on('precios_actualizados', (data) => {
     console.log('Precios actualizados:', data);
     preciosActuales = data;
-    renderPrecios();
+    // Solo renderizar si no estamos actualizando los precios manualmente
+    if (!actualizandoPrecios) {
+        renderPrecios();
+    }
 });
 
 let preciosActuales = {};
@@ -64,17 +70,34 @@ async function actualizarPrecios() {
         const input = document.getElementById(`precio-${tipo}`);
         nuevosPrecios[tipo] = parseFloat(input.value) || 0;
     });
-    
+
     try {
+        actualizandoPrecios = true; // Evitar que WebSocket sobrescriba el formulario
+
         const response = await fetch('/api/precios', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(nuevosPrecios)
         });
         const result = await response.json();
+
+        // Actualizar preciosActuales con la respuesta del servidor
+        if (result.precios) {
+            preciosActuales = result.precios;
+            renderPrecios(); // Renderizar una sola vez con los valores confirmados
+        }
+
         mostrarMensaje('mensaje-precios', 'Precios actualizados correctamente', 'success');
-        await cargarDatos();
+
+        // Esperar un poco antes de permitir actualizaciones de WebSocket
+        setTimeout(() => {
+            actualizandoPrecios = false;
+        }, 500);
+
+        await cargarEstadisticas(); // Solo recargar estadísticas, no precios
+        await cargarDistribuidores(); // Recargar distribuidores
     } catch (error) {
+        actualizandoPrecios = false;
         mostrarMensaje('mensaje-precios', 'Error al actualizar precios', 'error');
     }
 }
@@ -264,8 +287,15 @@ async function cargarDatos() {
     await actualizarEstadoSimulacion();
 }
 
-// Carga inicial
+// Función para polling que NO carga precios (evita sobrescribir el formulario)
+async function cargarDatosPolling() {
+    await cargarDistribuidores();
+    await cargarEstadisticas();
+    await actualizarEstadoSimulacion();
+}
+
+// Carga inicial completa
 cargarDatos();
 
-// Polling de respaldo cada 10 segundos (por si falla WebSocket)
-setInterval(cargarDatos, 10000);
+// Polling de respaldo cada 10 segundos (SIN cargar precios para no sobrescribir inputs)
+setInterval(cargarDatosPolling, 10000);

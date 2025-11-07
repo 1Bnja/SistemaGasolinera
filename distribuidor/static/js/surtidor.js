@@ -40,6 +40,12 @@ socket.on('nueva_transaccion', (data) => {
     }
 });
 
+// Escuchar cambios de precios en tiempo real
+socket.on('precios_actualizados', (data) => {
+    console.log('Precios actualizados en tiempo real:', data);
+    cargarPrecios(); // Recargar precios
+});
+
 function actualizarEstadoEnTiempoReal(nuevoEstado) {
     estadoActual = nuevoEstado;
 

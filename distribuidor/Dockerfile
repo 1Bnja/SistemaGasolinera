@@ -7,7 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY distribuidor/ .
 
-# Crear directorio para datos
 RUN mkdir -p /data
 
 EXPOSE 8000 6000
