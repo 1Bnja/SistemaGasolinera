@@ -4,6 +4,8 @@ import json
 import requests
 import sqlite3
 import os
+import time
+import random
 from flask import Flask, render_template, request, jsonify
 from datetime import datetime
 
@@ -27,6 +29,13 @@ precios_actuales = {
 distribuidores_conectados = {}
 lock_distribuidores = threading.Lock()
 lock_db = threading.Lock()
+
+# Simulación automática de precios
+simulacion_precios_activa = False
+simulacion_precios_thread = None
+simulacion_precios_lock = threading.Lock()
+SIM_INTERVAL = int(os.getenv('SIM_PRECIOS_INTERVAL', '10'))  # segundos
+SIM_DELTA_PERCENT = float(os.getenv('SIM_PRECIOS_DELTA', '0.02'))  # variación ±2%
 
 
 def init_database():
@@ -221,6 +230,30 @@ def broadcast_precios():
                     dist.activo = False
 
 
+def simulacion_precios_loop():
+    global simulacion_precios_activa
+    print(f"[SIMULACION_PRECIOS] Iniciada (intervalo {SIM_INTERVAL}s, delta {SIM_DELTA_PERCENT*100:.1f}%)", flush=True)
+    while simulacion_precios_activa:
+        try:
+            # Calcular nuevos precios con variación aleatoria
+            for c in precios_actuales.keys():
+                delta = random.uniform(-SIM_DELTA_PERCENT, SIM_DELTA_PERCENT)
+                nuevo = max(100, int(precios_actuales[c] * (1 + delta)))
+                precios_actuales[c] = nuevo
+
+            # Guardar en DB
+            actualizar_precios_db()
+
+            # Propagar a distribuidores
+            broadcast_precios()
+            print(f"[SIMULACION_PRECIOS] Precios actualizados: {precios_actuales}", flush=True)
+        except Exception as e:
+            print(f"[SIMULACION_PRECIOS] Error: {e}", flush=True)
+
+        time.sleep(SIM_INTERVAL)
+    print(f"[SIMULACION_PRECIOS] Detenida", flush=True)
+
+
 def procesar_mensaje_distribuidor(distribuidor_id, mensaje):
     tipo = mensaje.get('tipo')
     
@@ -237,6 +270,23 @@ def procesar_mensaje_distribuidor(distribuidor_id, mensaje):
         with lock_distribuidores:
             if distribuidor_id in distribuidores_conectados:
                 distribuidores_conectados[distribuidor_id].ultima_conexion = datetime.now()
+    
+    elif tipo == 'cambio_precios':
+        # Manejar cambio de precios desde distribuidor
+        nuevos_precios = mensaje.get('precios', {})
+        print(f"[CAMBIO_PRECIOS] Recibido de Distribuidor {distribuidor_id}: {nuevos_precios}", flush=True)
+        print(f"[CAMBIO_PRECIOS] Precios actuales antes del cambio: {precios_actuales}", flush=True)
+        
+        # Actualizar precios globales
+        for combustible, precio in nuevos_precios.items():
+            if combustible in COMBUSTIBLES:
+                precios_actuales[combustible] = int(precio)
+        
+        print(f"[CAMBIO_PRECIOS] Precios actuales después del cambio: {precios_actuales}", flush=True)
+        actualizar_precios_db()
+        
+        # Opcional: propagar a otros distribuidores
+        # broadcast_precios()
 
 
 def servidor_tcp():
@@ -369,10 +419,22 @@ def borrar_todos_datos():
 
 @app.route('/api/simulacion/global/iniciar', methods=['POST'])
 def iniciar_simulacion_global():
+    global simulacion_precios_activa, simulacion_precios_thread
     try:
         import requests
         resultados = []
         
+        # Iniciar simulación de precios en Casa Matriz
+        with simulacion_precios_lock:
+            if not simulacion_precios_activa:
+                simulacion_precios_activa = True
+                simulacion_precios_thread = threading.Thread(target=simulacion_precios_loop)
+                simulacion_precios_thread.daemon = True
+                simulacion_precios_thread.start()
+                resultados.append("CasaMatriz: Simulación de precios iniciada")
+                print("[SIMULACION_GLOBAL] Simulación de precios activada", flush=True)
+        
+        # Iniciar simulación en distribuidores
         for i in range(1, 4):
             try:
                 url = f'http://distribuidor-{i}:8000/api/simulacion/iniciar'
@@ -384,7 +446,7 @@ def iniciar_simulacion_global():
         
         return jsonify({
             'status': 'success',
-            'message': 'Comando de iniciar simulación enviado a todos los distribuidores',
+            'message': 'Simulación global iniciada (precios + distribuidores)',
             'resultados': resultados
         })
     except Exception as e:
@@ -393,10 +455,19 @@ def iniciar_simulacion_global():
 
 @app.route('/api/simulacion/global/detener', methods=['POST'])
 def detener_simulacion_global():
+    global simulacion_precios_activa
     try:
         import requests
         resultados = []
         
+        # Detener simulación de precios en Casa Matriz
+        with simulacion_precios_lock:
+            if simulacion_precios_activa:
+                simulacion_precios_activa = False
+                resultados.append("CasaMatriz: Simulación de precios detenida")
+                print("[SIMULACION_GLOBAL] Simulación de precios desactivada", flush=True)
+        
+        # Detener simulación en distribuidores
         for i in range(1, 4):
             try:
                 url = f'http://distribuidor-{i}:8000/api/simulacion/detener'
@@ -408,7 +479,7 @@ def detener_simulacion_global():
         
         return jsonify({
             'status': 'success',
-            'message': 'Comando de detener simulación enviado a todos los distribuidores',
+            'message': 'Simulación global detenida (precios + distribuidores)',
             'resultados': resultados
         })
     except Exception as e:

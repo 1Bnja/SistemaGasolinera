@@ -8,8 +8,14 @@ async function cargarPrecios() {
     try {
         const response = await fetch('/api/precios');
         const data = await response.json();
+        
+        // Solo actualizar si los precios realmente cambiaron
+        const preciosCambiaron = JSON.stringify(preciosActuales) !== JSON.stringify(data);
         preciosActuales = data;
-        renderPrecios();
+        
+        if (preciosCambiaron) {
+            renderPrecios();
+        }
     } catch (error) {
         console.error('Error al cargar precios:', error);
     }
@@ -17,6 +23,8 @@ async function cargarPrecios() {
 
 function renderPrecios() {
     const form = document.getElementById('precios-form');
+    if (!form) return;
+    
     const labels = {
         '93': 'Gasolina 93',
         '95': 'Gasolina 95',
@@ -25,13 +33,37 @@ function renderPrecios() {
         'kerosene': 'Kerosene'
     };
     
-    form.innerHTML = TIPOS_COMBUSTIBLE.map(tipo => `
-        <div class="precio-item">
-            <span class="precio-label">${labels[tipo]}</span>
-            <input type="number" id="precio-${tipo}" class="precio-input"
-                   value="${preciosActuales[tipo] || 0}" step="1" min="0">
-        </div>
-    `).join('');
+    // Verificar si el usuario está editando algún input
+    const activeElement = document.activeElement;
+    const isEditingPrice = activeElement && activeElement.id && activeElement.id.startsWith('precio-');
+    
+    TIPOS_COMBUSTIBLE.forEach(tipo => {
+        const input = document.getElementById(`precio-${tipo}`);
+        const nuevoPrecio = preciosActuales[tipo] || 0;
+        
+        // Solo actualizar si el input existe y (no está siendo editado O el valor cambió significativamente)
+        if (input && (!isEditingPrice || input !== activeElement)) {
+            if (parseInt(input.value) !== nuevoPrecio) {
+                input.value = nuevoPrecio;
+                // Añadir efecto visual de cambio
+                input.style.borderColor = 'var(--accent-primary)';
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                }, 1000);
+            }
+        }
+    });
+    
+    // Si el form está vacío, renderizar todo
+    if (form.children.length === 0) {
+        form.innerHTML = TIPOS_COMBUSTIBLE.map(tipo => `
+            <div class="precio-item">
+                <span class="precio-label">${labels[tipo]}</span>
+                <input type="number" id="precio-${tipo}" class="precio-input"
+                       value="${preciosActuales[tipo] || 0}" step="1" min="0">
+            </div>
+        `).join('');
+    }
 }
 
 async function actualizarPrecios() {

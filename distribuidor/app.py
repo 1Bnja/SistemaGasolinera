@@ -502,6 +502,59 @@ def limpiar_transacciones():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
+@app.route('/api/precios/actualizar', methods=['POST'])
+def actualizar_precios_local():
+    try:
+        nuevos_precios = request.json
+        
+        # Actualizar precios locales
+        for combustible in COMBUSTIBLES:
+            if combustible in nuevos_precios:
+                precios_actuales[combustible] = int(nuevos_precios[combustible])
+        
+        # Guardar en DB local
+        with lock_db:
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            for combustible, precio in nuevos_precios.items():
+                if combustible in COMBUSTIBLES:
+                    cursor.execute(
+                        'INSERT INTO precios_historico (tipo_combustible, precio, timestamp, origen) VALUES (?, ?, ?, ?)',
+                        (combustible, precio, datetime.now().isoformat(), 'local')
+                    )
+            conn.commit()
+            conn.close()
+        
+        # Enviar cambio a Casa Matriz
+        if conexion_casa_matriz and not modo_autonomo:
+            try:
+                mensaje = {
+                    'tipo': 'cambio_precios',
+                    'distribuidor_id': DISTRIBUIDOR_ID,
+                    'precios': precios_actuales,
+                    'timestamp': datetime.now().isoformat()
+                }
+                mensaje_json = json.dumps(mensaje)
+                print(f"[DIST {DISTRIBUIDOR_ID}] Enviando cambio de precios a Casa Matriz: {mensaje_json}", flush=True)
+                conexion_casa_matriz.send(mensaje_json.encode('utf-8'))
+                print(f"[DIST {DISTRIBUIDOR_ID}] Cambio de precios enviado exitosamente", flush=True)
+            except Exception as e:
+                print(f"[DIST {DISTRIBUIDOR_ID}] Error enviando cambio de precios a Casa Matriz: {e}", flush=True)
+        else:
+            print(f"[DIST {DISTRIBUIDOR_ID}] No se envió a Casa Matriz - conexion: {conexion_casa_matriz is not None}, modo_autonomo: {modo_autonomo}", flush=True)
+        
+        # Propagar a surtidores locales
+        propagar_precios_surtidores()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Precios actualizados localmente' + (' y enviados a Casa Matriz' if not modo_autonomo else ''),
+            'precios': precios_actuales
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+
 surtidores_estado = {}
 surtidores_lock = threading.Lock()
 

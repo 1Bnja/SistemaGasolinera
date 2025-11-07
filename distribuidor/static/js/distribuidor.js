@@ -19,6 +19,9 @@
                 }
                 lucide.createIcons();
                 
+                // Renderizar formulario de precios
+                renderFormPrecios(data.precios);
+                
                 // Surtidores
                 const surtidoresHtml = data.surtidores.map(s => {
                     const surtidorNum = s.id.split('.')[1];
@@ -129,6 +132,71 @@
         async function cargarDatos() {
             await cargarEstado();
             await cargarTransacciones();
+        }
+        
+        function renderFormPrecios(precios) {
+            const form = document.getElementById('precios-form-dist');
+            if (!form) return;
+            
+            const labels = {
+                '93': 'Gasolina 93',
+                '95': 'Gasolina 95',
+                '97': 'Gasolina 97',
+                'diesel': 'Diesel',
+                'kerosene': 'Kerosene'
+            };
+            
+            const tipos = ['93', '95', '97', 'diesel', 'kerosene'];
+            form.innerHTML = tipos.map(tipo => `
+                <div class="precio-item">
+                    <span class="precio-label">${labels[tipo] || tipo}</span>
+                    <input type="number" id="precio-dist-${tipo}" class="precio-input"
+                           value="${precios[tipo] || 0}" step="1" min="0">
+                </div>
+            `).join('');
+        }
+        
+        async function actualizarPreciosLocal() {
+            const nuevosPrecios = {};
+            ['93', '95', '97', 'diesel', 'kerosene'].forEach(tipo => {
+                const input = document.getElementById(`precio-dist-${tipo}`);
+                if (input) {
+                    nuevosPrecios[tipo] = parseInt(input.value) || 0;
+                }
+            });
+            
+            try {
+                const response = await fetch('/api/precios/actualizar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(nuevosPrecios)
+                });
+                
+                const result = await response.json();
+                
+                const mensaje = document.getElementById('mensaje-precios');
+                if (response.ok) {
+                    mensaje.textContent = result.message || 'Precios actualizados correctamente';
+                    mensaje.className = 'mensaje success';
+                } else {
+                    mensaje.textContent = result.message || 'Error al actualizar precios';
+                    mensaje.className = 'mensaje error';
+                }
+                mensaje.style.display = 'block';
+                
+                setTimeout(() => {
+                    mensaje.style.display = 'none';
+                }, 4000);
+                
+                await cargarDatos();
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Error:', error);
+                const mensaje = document.getElementById('mensaje-precios');
+                mensaje.textContent = 'Error de conexión con el servidor';
+                mensaje.className = 'mensaje error';
+                mensaje.style.display = 'block';
+            }
         }
         
         cargarDatos();
