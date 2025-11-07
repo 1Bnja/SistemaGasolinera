@@ -5,9 +5,12 @@ import time
 import sqlite3
 import os
 from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO, emit
 from datetime import datetime
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'sistema-gasolinera-secret-key'
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 DISTRIBUIDOR_ID = os.getenv('DISTRIBUIDOR_ID', '1')
 CASA_MATRIZ_HOST = os.getenv('CASA_MATRIZ_HOST', 'casa-matriz')
@@ -535,56 +538,73 @@ def simulacion_automatica():
                 surtidor_elegido = random.choice(surtidores_libres)
                 combustible_elegido = random.choice(COMBUSTIBLES)
                 litros_elegidos = round(random.uniform(10, 60), 2)
-                
+
                 surtidor_num = surtidor_elegido.split('.')[1]
-                
+
                 with surtidores_lock:
                     if surtidores_estado[surtidor_elegido]['estado'] != 'LIBRE':
                         continue
-                
-                def _simular_carga():
+
+                def _simular_carga(surt_id, combustible, litros):
                     try:
                         with surtidores_lock:
-                            surtidores_estado[surtidor_elegido]['estado'] = 'EN_OPERACION'
-                        
-                        actualizar_estado_surtidor_db(surtidor_elegido, 'EN_OPERACION')
-                        
+                            surtidores_estado[surt_id]['estado'] = 'EN_OPERACION'
+
+                        actualizar_estado_surtidor_db(surt_id, 'EN_OPERACION')
+
+                        # Emitir evento WebSocket de cambio de estado
+                        socketio.emit('surtidor_estado', {
+                            'surtidor_id': surt_id,
+                            'estado': 'EN_OPERACION',
+                            'timestamp': datetime.now().isoformat()
+                        })
+
                         tiempo_dispensado = random.uniform(3, 8)
                         time.sleep(tiempo_dispensado)
-                        
-                        precio_por_litro = precios_actuales.get(combustible_elegido, 0)
-                        total = litros_elegidos * precio_por_litro
-                        
+
+                        precio_por_litro = precios_actuales.get(combustible, 0)
+                        total = litros * precio_por_litro
+
                         transaccion = {
-                            'tipo_combustible': combustible_elegido,
-                            'litros': litros_elegidos,
+                            'tipo_combustible': combustible,
+                            'litros': litros,
                             'precio_por_litro': precio_por_litro,
                             'total': total,
                             'timestamp': datetime.now().isoformat(),
-                            'surtidor_id': surtidor_elegido
+                            'surtidor_id': surt_id
                         }
-                        
+
                         with surtidores_lock:
-                            surtidores_estado[surtidor_elegido]['contadores'][combustible_elegido]['litros'] += litros_elegidos
-                            surtidores_estado[surtidor_elegido]['contadores'][combustible_elegido]['cargas'] += 1
-                            surtidores_estado[surtidor_elegido]['contadores'][combustible_elegido]['monto'] += total
-                        
-                        registrar_transaccion(surtidor_elegido, transaccion)
-                        
+                            surtidores_estado[surt_id]['contadores'][combustible]['litros'] += litros
+                            surtidores_estado[surt_id]['contadores'][combustible]['cargas'] += 1
+                            surtidores_estado[surt_id]['contadores'][combustible]['monto'] += total
+
+                        registrar_transaccion(surt_id, transaccion)
+
+                        # Emitir evento WebSocket de nueva transacción
+                        socketio.emit('nueva_transaccion', transaccion)
+
                         with surtidores_lock:
-                            surtidores_estado[surtidor_elegido]['estado'] = 'LIBRE'
-                        
-                        actualizar_estado_surtidor_db(surtidor_elegido, 'LIBRE')
-                        
-                        print(f"Simulación: Surtidor {surtidor_elegido} - {litros_elegidos}L de {combustible_elegido}", flush=True)
+                            surtidores_estado[surt_id]['estado'] = 'LIBRE'
+
+                        actualizar_estado_surtidor_db(surt_id, 'LIBRE')
+
+                        # Emitir evento WebSocket de cambio de estado a LIBRE
+                        socketio.emit('surtidor_estado', {
+                            'surtidor_id': surt_id,
+                            'estado': 'LIBRE',
+                            'timestamp': datetime.now().isoformat()
+                        })
+
+                        print(f"Simulación: Surtidor {surt_id} - {litros}L de {combustible}", flush=True)
                     except Exception as e:
                         print(f"Error en simulación de carga: {e}", flush=True)
                         with surtidores_lock:
-                            if surtidor_elegido in surtidores_estado:
-                                surtidores_estado[surtidor_elegido]['estado'] = 'LIBRE'
-                        actualizar_estado_surtidor_db(surtidor_elegido, 'LIBRE')
-                
-                thread = threading.Thread(target=_simular_carga)
+                            if surt_id in surtidores_estado:
+                                surtidores_estado[surt_id]['estado'] = 'LIBRE'
+                        actualizar_estado_surtidor_db(surt_id, 'LIBRE')
+
+                thread = threading.Thread(target=_simular_carga, args=(surtidor_elegido, combustible_elegido, litros_elegidos))
                 thread.daemon = True
                 thread.start()
             
@@ -754,5 +774,5 @@ if __name__ == '__main__':
     tcp_thread.start()
     
     print(f"Servidor Web Distribuidor {DISTRIBUIDOR_ID} iniciando en puerto {WEB_PORT}")
-    
-    app.run(host=HOST, port=WEB_PORT, debug=False, threaded=True)
+
+    socketio.run(app, host=HOST, port=WEB_PORT, debug=False, allow_unsafe_werkzeug=True)

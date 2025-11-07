@@ -5,9 +5,12 @@ import requests
 import sqlite3
 import os
 from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO, emit
 from datetime import datetime
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'casa-matriz-secret-key'
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 TCP_PORT = 5001
 WEB_PORT = 5000
@@ -88,7 +91,7 @@ def guardar_transaccion_db(transaccion):
         cursor = conn.cursor()
         
         cursor.execute('''
-            INSERT INTO transacciones 
+            INSERT INTO transacciones
             (distribuidor_id, surtidor_id, tipo_combustible, timestamp, litros, precio_por_litro, total)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (
@@ -100,9 +103,12 @@ def guardar_transaccion_db(transaccion):
             transaccion['precio_por_litro'],
             transaccion['total']
         ))
-        
+
         conn.commit()
         conn.close()
+
+    # Emitir evento WebSocket de nueva transacción en Casa Matriz
+    socketio.emit('nueva_transaccion_matriz', transaccion)
 
 
 def obtener_transacciones_db():
@@ -274,7 +280,10 @@ def actualizar_precios():
         
         actualizar_precios_db()
         broadcast_precios()
-        
+
+        # Emitir evento WebSocket de cambio de precios
+        socketio.emit('precios_actualizados', precios_actuales)
+
         return jsonify({
             'status': 'success',
             'message': 'Precios actualizados y propagados',
@@ -448,5 +457,5 @@ if __name__ == '__main__':
     
     print(f"Servidor Web Casa Matriz iniciando en puerto {WEB_PORT}", flush=True)
     print(f"Acceder a: http://localhost:{WEB_PORT}", flush=True)
-    
-    app.run(host=HOST, port=WEB_PORT, debug=False, threaded=True)
+
+    socketio.run(app, host=HOST, port=WEB_PORT, debug=False, allow_unsafe_werkzeug=True)

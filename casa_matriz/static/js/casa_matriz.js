@@ -1,6 +1,30 @@
 // Initialize Lucide icons
 lucide.createIcons();
 
+// Conectar a WebSocket
+const socket = io();
+
+socket.on('connect', () => {
+    console.log('Conectado a WebSocket de Casa Matriz');
+});
+
+socket.on('disconnect', () => {
+    console.log('Desconectado de WebSocket');
+});
+
+// Escuchar nuevas transacciones en tiempo real
+socket.on('nueva_transaccion_matriz', (data) => {
+    console.log('Nueva transacción recibida en Casa Matriz:', data);
+    cargarEstadisticas(); // Actualizar estadísticas
+});
+
+// Escuchar cambios de precios en tiempo real
+socket.on('precios_actualizados', (data) => {
+    console.log('Precios actualizados:', data);
+    preciosActuales = data;
+    renderPrecios();
+});
+
 let preciosActuales = {};
 const TIPOS_COMBUSTIBLE = ['93', '95', '97', 'diesel', 'kerosene'];
 
@@ -240,5 +264,8 @@ async function cargarDatos() {
     await actualizarEstadoSimulacion();
 }
 
+// Carga inicial
 cargarDatos();
-setInterval(cargarDatos, 3000);
+
+// Polling de respaldo cada 10 segundos (por si falla WebSocket)
+setInterval(cargarDatos, 10000);
